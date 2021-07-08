@@ -1,0 +1,45 @@
+{
+  "name": "good-market",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.ts",
+  "engines": {
+    "node": "^16.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^16.0.1",
+    "@types/passport": "^1.0.7",
+    "nodemon": "^2.0.9",
+    "prettier": "^2.3.2",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "connect-redis": "^6.0.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "lodash": "^4.17.21",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0"
+  },
+  "scripts": {
+    "start": "nodemon",
+    "build": "tsc && tscpaths -p tsconfig.json -s ./src -o ./dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ignore": [
+      "src/**/*.spec.ts"
+    ],
+    "exec": "ts-node -r tsconfig-paths/register src/main.ts",
+    "ext": "js, json, ts, proto"
+  }
+}
