@@ -1,0 +1,11 @@
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <% for(let i = 0; i < errors.length; i++) { %>
+        <%- include("toast", {message: errors[i], toastClass: "bg-danger"}); %>
+    <% } %>
+    <% for(let i = 0; i < infos.length; i++) { %>
+        <%- include("toast", {message: infos[i], toastClass: "bg-primary"}); %>
+    <% } %>
+    <% for(let i = 0; i < successes.length; i++) { %>
+        <%- include("./toast", {message: successes[i], toastClass: "bg-success"}); %>
+    <% } %>
+</div>

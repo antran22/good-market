@@ -4,30 +4,45 @@ import compression from "compression";
 import bodyParser from "body-parser";
 import qs from "qs";
 import http from "http";
-
+import path from "path";
+import connectMongoDB from "@/config/mongoose";
 import passport from "@/config/passport";
 import buildSessionMiddleware from "@/config/session";
 import "@/utils";
 import env from "@/config/env";
 import queryGetterUtils from "@/utils/queryGetters";
-import mainRouter from "@/routes";
+import mainRouter from "@/controllers";
+import renderUtils from "@/utils/render";
+
+import expressLayouts from "express-ejs-layouts";
+import flash from "connect-flash";
+
+connectMongoDB().then();
 
 const app = express();
 
-app.set("query parser", (str: string) => qs.parse(str, { comma: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use(
-  morgan("combined", {
-    skip: (req, res) =>
-      req.method === "GET" && req.originalUrl.includes("/users"),
-  })
-);
+app.use(morgan("combined"));
 app.use(compression());
+
+app.set("query parser", (str: string) => qs.parse(str, { comma: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 app.use(buildSessionMiddleware());
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "/views"));
+app.set("layout", "layouts/main_layout");
+app.use(expressLayouts);
+app.use(flash());
+
 app.use(queryGetterUtils);
+app.use(renderUtils);
+
+app.use(express.static(path.join(__dirname, "/public")));
+
 app.use(mainRouter);
 
 const port: number = env.int("SERVER_PORT", 3000);
