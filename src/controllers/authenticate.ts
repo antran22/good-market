@@ -1,15 +1,13 @@
 import { Router } from "express";
 import passport from "passport";
 import UserModel from "@/models/User";
-import _ from "lodash";
-import { body } from "express-validator";
 import {
-  equalToFieldInBody,
+  displayNameInFormValidator,
   passwordInFormValidator,
+  phoneNumberInFormValidator,
+  reloadIfValidationFailed,
   usernameInFormValidator,
-  validateAndReloadIfError,
 } from "@/utils/validator";
-import { exists } from "fs";
 
 const authenticateRouter = Router();
 
@@ -41,11 +39,9 @@ authenticateRouter.post(
   "/register",
   passwordInFormValidator,
   usernameInFormValidator,
-  body("displayName").exists().withMessage("Invalid value for Display Name"),
-  body("phoneNumber")
-    .isMobilePhone("vi-VN")
-    .withMessage("Invalid value for Phone Number"),
-  validateAndReloadIfError,
+  displayNameInFormValidator,
+  phoneNumberInFormValidator,
+  reloadIfValidationFailed,
   function registerUser(req, res) {
     UserModel.register(
       new UserModel({

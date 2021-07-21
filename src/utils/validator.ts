@@ -10,7 +10,7 @@ const customResultValidator = validationResult.withDefaults({
   },
 });
 
-export const validateAndReloadIfError: Handler = (req, res, next) => {
+export const reloadIfValidationFailed: Handler = (req, res, next) => {
   const errors = customResultValidator(req);
   if (errors.isEmpty()) {
     return next();
@@ -42,3 +42,11 @@ export const usernameInFormValidator = body("username")
   .withMessage("Username must contain only alphabetic, numeric character and _")
   .isLength({ min: 8, max: 32 })
   .withMessage("Username length must be from 8 to 32 characters long");
+
+export const displayNameInFormValidator = body("displayName")
+  .exists()
+  .withMessage("Invalid value for Display Name");
+
+export const phoneNumberInFormValidator = body("phoneNumber")
+  .isMobilePhone("vi-VN")
+  .withMessage("Invalid value for Phone Number");

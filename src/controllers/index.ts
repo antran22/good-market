@@ -1,6 +1,7 @@
 import { Router } from "express";
-import authenticateRouter from "@/controllers/authenticate";
 import { authenticationGuard } from "./_utils";
+import authenticateRouter from "./authenticate";
+import bioRouter from "./bio";
 
 const mainRouter = Router();
 
@@ -9,6 +10,8 @@ mainRouter.get("/", function renderHome(req, res) {
 });
 
 mainRouter.use(authenticateRouter);
+
+mainRouter.use(bioRouter);
 
 mainRouter.use(authenticationGuard);
 
