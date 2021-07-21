@@ -1,6 +1,15 @@
 import { Router } from "express";
 import passport from "passport";
 import UserModel from "@/models/User";
+import _ from "lodash";
+import { body } from "express-validator";
+import {
+  equalToFieldInBody,
+  passwordInFormValidator,
+  usernameInFormValidator,
+  validateAndReloadIfError,
+} from "@/utils/validator";
+import { exists } from "fs";
 
 const authenticateRouter = Router();
 
@@ -28,23 +37,34 @@ authenticateRouter.get("/register", function renderRegisterView(req, res) {
   res.renderTemplate("template/register");
 });
 
-authenticateRouter.post("/register", function registerUser(req, res) {
-  UserModel.register(
-    new UserModel({
-      username: req.body.username,
-      displayName: req.body.displayName,
-    }),
-    req.body.password,
-    function (err: Error, user) {
-      if (err) {
-        req.flash("error", `Register failed: ${err.message}`);
-        return res.renderTemplate("template/register");
+authenticateRouter.post(
+  "/register",
+  passwordInFormValidator,
+  usernameInFormValidator,
+  body("displayName").exists().withMessage("Invalid value for Display Name"),
+  body("phoneNumber")
+    .isMobilePhone("vi-VN")
+    .withMessage("Invalid value for Phone Number"),
+  validateAndReloadIfError,
+  function registerUser(req, res) {
+    UserModel.register(
+      new UserModel({
+        username: req.body.username,
+        displayName: req.body.displayName,
+        phoneNumber: req.body.phoneNumber,
+      }),
+      req.body.password,
+      function (err: Error, user) {
+        if (err) {
+          req.flash("error", `Register failed: ${err.message}`);
+          return res.renderTemplate("template/register");
+        }
+        req.flash("success", "Registered successfully. Please login");
+        return res.redirect("/login");
       }
-      req.flash("success", "Registered successfully. Please login");
-      return res.redirect("/login");
-    }
-  );
-});
+    );
+  }
+);
 
 authenticateRouter.get("/logout", function logout(req, res) {
   if (req.isUnauthenticated()) {
