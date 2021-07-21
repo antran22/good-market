@@ -1,0 +1,10 @@
+<% if (request.url === url) { %>
+    <a class="nav-link active disabled" aria-current="page" href="<%= url %>">
+        <%= title %>
+    </a>
+<% } else { %>
+    <a class="nav-link" href="<%= url %>">
+        <%= title %>
+    </a>
+<% } %>
+
