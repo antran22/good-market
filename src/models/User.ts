@@ -14,7 +14,7 @@ export const UserSchema = new Schema<IUser>(
     username: { type: String, required: true },
     displayName: { type: String, required: true },
     password: String,
-    phoneNumber: String,
+    phoneNumber: { type: String, required: true },
     score: { type: Number, default: 0, required: true },
   },
   { timestamps: true }

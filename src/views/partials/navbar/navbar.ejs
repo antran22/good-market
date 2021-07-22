@@ -1,24 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">Good Market</a>
-        <ul class="navbar-nav d-flex">
+        <ul class="navbar-nav d-flex flex-row">
             <% if (request.user) { %>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        Dropdown
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
-                </li>
+                <%- include("./userNavOptions", {request}) %>
             <% } else { %>
-                <%- include("./navlink", {request, url: "/login", title: "Login"}) %>
-                <%- include("./navlink", {request, url: "/register", title: "Register"}) %>
+                <%- include("./navLink", {request, url: "/login", title: "Login"}) %>
+                <%- include("./navLink", {request, url: "/register", title: "Register"}) %>
             <% } %>
         </ul>
     </div>
