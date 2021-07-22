@@ -6,6 +6,7 @@ import {
 } from "@/utils/validator";
 import multerUpload from "@/utils/multer";
 import { notNil } from "@/utils";
+import PostModel from "@/models/Post";
 
 const bioRouter = Router();
 

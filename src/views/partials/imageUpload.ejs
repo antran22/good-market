@@ -2,14 +2,15 @@
 <input class="visually-hidden" type="file" id="<%= fieldName %>" name="<%= fieldName %>">
 
 <div class="file-input position-relative">
-    <div id="<%= previewFormName %>" class="container bg-light file-input-preview position-absolute">
-    </div>
-    <div class="file-input-text bg-light text-center">
+
+    <div class="file-input-text bg-light text-center position-absolute">
         <span class="align-middle m-auto">
             Upload file
             <br/>
             <i class="bi bi-cloud-upload h1"></i>
         </span>
+    </div>
+    <div id="<%= previewFormName %>" class="container bg-light file-input-preview position-absolute">
     </div>
 </div>
 <script>
@@ -18,15 +19,19 @@
   });
   <% if (defaultUrl) { %>
   $('#<%= previewFormName %>').css('background-image', 'url("<%= defaultUrl %>")');
+  <% } else { %>
+  $('#<%= previewFormName %>').css('opacity', '0');
   <% } %>
   $('#<%= fieldName %>').change(function () {
     const file = this.files[0];
     const reader = new FileReader();
     reader.onloadend = function () {
-      $('#<%= previewFormName %>').css('background-image', 'url("' + reader.result + '")');
+      $('#<%= previewFormName %>').css('background-image', 'url("' + reader.result + '")').css('opacity', '100%');
     }
     if (file) {
       reader.readAsDataURL(file);
+    } else {
+      $('#<%= previewFormName %>').css('opacity', '0');
     }
   });
 </script>
