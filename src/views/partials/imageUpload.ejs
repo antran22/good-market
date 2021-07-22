@@ -1,0 +1,32 @@
+<% const previewFormName = fieldName + "Preview" %>
+<input class="visually-hidden" type="file" id="<%= fieldName %>" name="<%= fieldName %>">
+
+<div class="file-input position-relative">
+    <div id="<%= previewFormName %>" class="container bg-light file-input-preview position-absolute">
+    </div>
+    <div class="file-input-text bg-light text-center">
+        <span class="align-middle m-auto">
+            Upload file
+            <br/>
+            <i class="bi bi-cloud-upload h1"></i>
+        </span>
+    </div>
+</div>
+<script>
+  $('#<%= previewFormName %>').on('click', function () {
+    $('#<%= fieldName %>').click();
+  });
+  <% if (defaultUrl) { %>
+  $('#<%= previewFormName %>').css('background-image', 'url("<%= defaultUrl %>")');
+  <% } %>
+  $('#<%= fieldName %>').change(function () {
+    const file = this.files[0];
+    const reader = new FileReader();
+    reader.onloadend = function () {
+      $('#<%= previewFormName %>').css('background-image', 'url("' + reader.result + '")');
+    }
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  });
+</script>

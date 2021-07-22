@@ -1,24 +1,51 @@
 import { Handler } from "express";
-import { body, CustomValidator, validationResult } from "express-validator";
-
-const customResultValidator = validationResult.withDefaults({
-  formatter: (error) => {
-    return {
-      ...error,
-      msg: `Validation Error: ${error.msg}`,
-    };
-  },
-});
+import {
+  body,
+  CustomValidator,
+  Result,
+  validationResult,
+} from "express-validator";
 
 export const reloadIfValidationFailed: Handler = (req, res, next) => {
-  const errors = customResultValidator(req);
-  if (errors.isEmpty()) {
-    return next();
+  const validationErrors = req.validate();
+  if (!validationErrors.isEmpty()) {
+    return res.redirect("back");
   }
-  errors.array().forEach((error) => {
-    req.flash("error", error.msg);
+  return next();
+};
+
+declare global {
+  namespace Express {
+    interface Request {
+      validate(): Result;
+      flashValidationErrors(errors: Result): void;
+    }
+  }
+}
+
+export const validationUtils: Handler = (req, res, next) => {
+  const customResultValidator = validationResult.withDefaults({
+    formatter: (error) => {
+      return {
+        ...error,
+        msg: `Validation Error: ${error.msg}`,
+      };
+    },
   });
-  return res.redirect("back");
+
+  req.validate = () => {
+    return customResultValidator(req);
+  };
+
+  req.flashValidationErrors = (errors: Result) => {
+    if (errors.isEmpty()) {
+      return false;
+    }
+    errors.array().forEach((error) => {
+      req.flash("error", error.msg);
+    });
+  };
+  next();
 };
 
 export function equalToFieldInBody(fieldName: string): CustomValidator {

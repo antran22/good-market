@@ -1,21 +1,24 @@
+import http from "http";
+import path from "path";
+
+import qs from "qs";
 import express from "express";
 import morgan from "morgan";
 import compression from "compression";
 import bodyParser from "body-parser";
-import qs from "qs";
-import http from "http";
-import path from "path";
+import expressLayouts from "express-ejs-layouts";
+import flash from "connect-flash";
+
 import connectMongoDB from "@/config/mongoose";
 import passport from "@/config/passport";
 import buildSessionMiddleware from "@/config/session";
 import "@/utils";
 import env from "@/config/env";
 import queryGetterUtils from "@/utils/queryGetters";
+
 import mainRouter from "@/controllers";
 import renderUtils from "@/utils/render";
-
-import expressLayouts from "express-ejs-layouts";
-import flash from "connect-flash";
+import { validationUtils } from "@/utils/validator";
 
 connectMongoDB().then();
 
@@ -36,12 +39,15 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
 app.set("layout", "layouts/main_layout");
 app.use(expressLayouts);
+app.set("layout extractScripts", true);
 app.use(flash());
 
 app.use(queryGetterUtils);
+app.use(validationUtils);
 app.use(renderUtils);
 
 app.use(express.static(path.join(__dirname, "/public")));
+app.use(`/${env("UPLOAD_DIR")}`, express.static(env("UPLOAD_DIR")));
 
 app.use(mainRouter);
 

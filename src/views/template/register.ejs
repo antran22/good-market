@@ -1,21 +1,30 @@
-<form class="container-sm mt-3 text-center bg-light p-5 rounded-5 auth-form" action="/register" method="POST">
+<form class="container-sm mt-3 text-center bg-light p-5 rounded-5 auth-form" action="/register" method="POST"
+      enctype="multipart/form-data">
     <h1>Register</h1>
     <div class="mb-3 mt-3 row">
         <label for="username" class="form-label col-sm-3">Username</label>
         <div class="col-sm-9">
-            <input class="form-control" id="username" name="username">
+            <input class="form-control" id="username" name="username" value="<%= defaultBody?.username ?? "" %>">
         </div>
     </div>
     <div class="mb-3 mt-3 row">
         <label for="displayName" class="form-label col-sm-3">Name</label>
         <div class="col-sm-9">
-            <input class="form-control" id="displayName" name="displayName">
+            <input class="form-control" id="displayName" name="displayName"
+                   value="<%= defaultBody?.displayName ?? "" %>">
+        </div>
+    </div>
+    <div class="mb-3 row">
+        <label for="avatar" class="form-label col-sm-3">Avatar</label>
+        <div class="col-sm-9 border-2" style="width: 150px; height: 150px; box-sizing: content-box;">
+            <%- include("../partials/imageUpload", {fieldName: "avatar", defaultUrl: ""}); %>
         </div>
     </div>
     <div class="mb-3 mt-3 row">
         <label for="phoneNumber" class="form-label col-sm-3">Phone Number</label>
         <div class="col-sm-9">
-            <input class="form-control" id="phoneNumber" name="phoneNumber">
+            <input class="form-control" id="phoneNumber" name="phoneNumber"
+                   value="<%= defaultBody?.phoneNumber ?? "" %>">
         </div>
     </div>
     <div class="mb-3 mt-3 row">
