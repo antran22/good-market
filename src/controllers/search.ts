@@ -7,6 +7,7 @@ searchRouter.get('/search', function renderFilteredPost(req, res, next) {
     // let title = req.query.title;
     // let posts = Post.find({title:title, tags:tags});\
     let posts = [new Post({
+        ID: '00000',
         title: 'fumino furuhashi',
         imagePaths: ['https://static.zerochan.net/Furuhashi.Fumino.full.2786855.jpg'],
         description: 'waifu',
@@ -15,6 +16,7 @@ searchRouter.get('/search', function renderFilteredPost(req, res, next) {
         tags: ['anime', 'student', 'genius'],
         comments: ['wonderful!!']
     }), new Post({
+        ID: '00001',
         title: 'Mafuyu Kirisu',
         imagePaths: ['https://static.wikia.nocookie.net/bokutachi-study/images/0/06/20190803_194047.png'],
         description: 'waifu',
