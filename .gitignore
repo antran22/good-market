@@ -21,3 +21,4 @@ target/
 # JetBrains IDE
 .idea/
 .vscode/
+_uploads/

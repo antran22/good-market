@@ -1,0 +1,27 @@
+<div>
+    <h1> You are searching! </h1>
+
+    <% posts.forEach(function (post){ %>
+<!--        <div class="row">-->
+            <div class="col-sm-6 col-md-4">
+                <div class="thumbnail">
+                    <img src=<%= post.imagePaths[0] %> alt="...">
+                    <div class="caption">
+                        <h3><%= post.title %></h3>
+                        <p><%= post.description %></p>
+                        <div class="row"></div>
+                            <% post.tags.forEach(function (tag) {%>
+                                <button type="button" class="btn btn-info"><%=tag%></button>
+                            <%})%>
+                        </div>
+                        <p><a href="#" class="btn btn-primary" role="button">Trade now</a> <a href="#"
+                                                                                              class="btn btn-default"
+                                                                                              role="button">Add to
+                                cart</a></p>
+                    </div>
+                </div>
+            </div>
+<!--        </div>-->
+    <% }) %>
+
+</div>

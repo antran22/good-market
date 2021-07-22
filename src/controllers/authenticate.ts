@@ -1,15 +1,13 @@
 import { Router } from "express";
 import passport from "passport";
 import UserModel from "@/models/User";
-import _ from "lodash";
-import { body } from "express-validator";
 import {
-  equalToFieldInBody,
+  displayNameInFormValidator,
   passwordInFormValidator,
+  phoneNumberInFormValidator,
   usernameInFormValidator,
-  validateAndReloadIfError,
 } from "@/utils/validator";
-import { exists } from "fs";
+import multerUpload from "@/utils/multer";
 
 const authenticateRouter = Router();
 
@@ -34,30 +32,38 @@ authenticateRouter.get("/register", function renderRegisterView(req, res) {
   if (req.isAuthenticated()) {
     res.redirect("/");
   }
-  res.renderTemplate("template/register");
+  res.renderTemplate("template/register", { defaultBody: null });
 });
 
 authenticateRouter.post(
   "/register",
+  multerUpload.single("avatar"),
   passwordInFormValidator,
   usernameInFormValidator,
-  body("displayName").exists().withMessage("Invalid value for Display Name"),
-  body("phoneNumber")
-    .isMobilePhone("vi-VN")
-    .withMessage("Invalid value for Phone Number"),
-  validateAndReloadIfError,
+  displayNameInFormValidator,
+  phoneNumberInFormValidator,
   function registerUser(req, res) {
+    const validationErrors = req.validate();
+    if (!validationErrors.isEmpty()) {
+      req.flashValidationErrors(validationErrors);
+      return res.renderTemplate("template/register", {
+        defaultBody: req.body,
+      });
+    }
     UserModel.register(
       new UserModel({
         username: req.body.username,
         displayName: req.body.displayName,
         phoneNumber: req.body.phoneNumber,
+        avatar: req.file?.path ?? null,
       }),
       req.body.password,
       function (err: Error, user) {
         if (err) {
           req.flash("error", `Register failed: ${err.message}`);
-          return res.renderTemplate("template/register");
+          return res.renderTemplate("template/register", {
+            defaultBody: req.body,
+          });
         }
         req.flash("success", "Registered successfully. Please login");
         return res.redirect("/login");
