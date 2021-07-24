@@ -14,7 +14,7 @@ myPostRouter.get('/post/me', (req, res) => {
             for (let post of posts) {
                 chunks.push(post);
             }
-            res.renderTemplate('template/postList', {post: chunks});
+            res.renderTemplate('template/postList', {post: chunks, isSeller: true});
         });
     }
 });
