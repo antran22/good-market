@@ -15,13 +15,16 @@ async function check_valid_user(req, res, next) {
 }
 
 async function extract_comments(req, res, next) {
-  for(let i = 0; i < req.other.comments.length; i++) {
-    try {
-      req.other.comments[i] = await CommentModel.findById(req.other.comments[i]).exec();
-    } catch (error) {
-      continue;
+  for(let i = 0; i < req.other.comments.length; i++) 
+    if (req.other.comments[i] !== null) {
+      try {
+        req.other.comments[i] = await CommentModel.findById(req.other.comments[i]).exec();
+        req.other.comments[i].author = await UserModel.findById(req.other.comments[i].author).exec();
+      } catch (error) {
+        continue;
+      }
     }
-  }
+  console.log(req.other.comments[0]);
   next();
 }
 
@@ -41,7 +44,7 @@ async function check_valid_comment(req, res, next) {
 }
 
 async function add_comment(req, res, next) {
-  UserModel.findById(req.user._id, async function (err, result) {
+  UserModel.findById(req.params.userID, async function (err, result) {
     let newComment = new CommentModel({
       images: "",
       title: "",
@@ -56,12 +59,14 @@ async function add_comment(req, res, next) {
 }
 
 async function check_valid_delete(req, res, next) {
-  await CommentModel.findById(req.params.commentID, async function(err, result) {
-    if (req.params.userID.toString() == req.user._id.toString() 
-    || result.author.toString() == req.user._id.toString())
+  try {
+    let result = await CommentModel.findById(req.params.commentID).exec();
+    if (req.params.userID.toString() == req.user._id.toString() || result.author.toString() == req.user._id.toString())
       next();
-  });
-  req.flash("error", "Invalid delete.");
+    req.flash("error", "Invalid delete.");
+  } catch (err) {
+    req.flash("error", "Invalid delete.");
+  }
   res.redirect("/user/" + req.params.userID);
 };
 

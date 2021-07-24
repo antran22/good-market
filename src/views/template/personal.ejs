@@ -29,7 +29,9 @@
             <div class="bg-secondary rounded p-3 m-3">
                 <h1 class="text-center">Comments</h1>
                 <% for(let i = 0; i < request.other.comments.length; i++ ) { %>
-                    <%- include("../partials/comment", request.other.comments[i]) %>
+                    <% if (request.other.comments[i] !== null) { %>
+                        <%- include("../partials/comment", request.other.comments[i]) %>
+                    <% } %>
                 <% } %>
             </div>
         </div>

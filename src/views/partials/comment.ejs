@@ -1,8 +1,8 @@
 <div class="p-3 m-3 bg-light">
     <div class="row">
         <div class="col-sm-5">
-            <form action="/user/<%= author %>" method="get">
-                <button type="submit" class="btn float-right"><h5><%= author %></h5></button>
+            <form action="/user/<%= author._id %>" method="get">
+                <button type="submit" class="btn float-right"><h5><%= author.displayName %></h5></button>
             </form>
         </div>
         <div class="col-sm-5">
