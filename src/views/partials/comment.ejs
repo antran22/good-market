@@ -1,0 +1,20 @@
+<div class="p-3 m-3 bg-light">
+    <div class="row">
+        <div class="col-sm-5">
+            <form action="/user/<%= author %>" method="get">
+                <button type="submit" class="btn float-right"><h5><%= author %></h5></button>
+            </form>
+        </div>
+        <div class="col-sm-5">
+            <h5><%= title %></h5>
+        </div>
+        <div class="col-sm-2">
+            <form action="/user/<%= request.other._id %>/delete/<%= _id %>" method="post">
+                <button type="submit" class="btn btn-primary float-right">Delete</button>
+            </form>
+        </div>
+    </div>
+    <div class="">
+        <h6><%= description %></h6>
+    </div>
+</div>
