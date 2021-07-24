@@ -1,55 +1,56 @@
 import {Router} from "express";
-import Post from "@/models/Post";
+
 const myPostRouter = Router()
-import TagModel, {ITag} from "@/models/Tag" ;
 import PostModel from "@/models/Post";
-import {PopulatedDoc} from "mongoose";
-import {IUser} from "@/models/User";
+import multerUpload from "@/utils/multer";
 
-
-myPostRouter.get('/post/me', function renderFilteredPost(req, res, next) {
+myPostRouter.get('/post/me', (req, res) => {
     // console.log(req.user);
-    if (!req.isAuthenticated()){
+    if (!req.isAuthenticated()) {
         res.redirect('/login');
-    } else{
+    } else {
         PostModel.find({seller: req.user._id}).exec(function (err, posts) {
             const chunks = [];
             for (let post of posts) {
                 chunks.push(post);
-            };
+            }
             res.renderTemplate('template/postList', {post: chunks});
         });
     }
 });
-myPostRouter.get('/post/me/create', async function renderCreatePost(req, res) {
-    if (!req.isAuthenticated()){
-        res.redirect('/login');
-        return;
-    }
-    console.log(req);
-    res.renderTemplate('template/postCreator');
-    // res.redirect('/post/me');
-})
-
-myPostRouter.post('/post/me/create', async function turnBack(req, res) {
-    if (!req.isAuthenticated()){
-        res.redirect('/login');
-        return;
-    }
-    console.log(req.body)
-    let newPost = new PostModel({
-        title: req.body.title,
-        images: [],
-        description: req.body.description,
-        price: req.body.price,
-        tags: [],
-        seller: req.user._id
+myPostRouter.get('/post/me/create',
+    async function renderCreatePost(req, res) {
+        if (!req.isAuthenticated()) {
+            res.redirect('/login');
+            return;
+        }
+        res.renderTemplate('template/postCreator');
     })
-    await newPost.save();
-    console.log(req.body);
-    // console.log(res);
-    res.redirect('/post/me');
 
-})
+
+myPostRouter.post('/post/me/create',
+    multerUpload.array("productImages"),
+    async (req, res) => {
+        if (!req.isAuthenticated()) {
+            res.redirect('/login');
+            return;
+        }
+        console.log(req.body)
+        let newPost = new PostModel({
+            title: req.body.title,
+            images: [],
+            description: req.body.description,
+            price: req.body.price,
+            tags: [],
+            seller: req.user._id
+        });
+        for (let i = 0; i < req.files.length; i++) {
+            newPost.images.push(req.files[i].path);
+        }
+        await newPost.save();
+        // console.log(newPost);
+        res.redirect('/post/me');
+
+    })
 
 export default myPostRouter;
