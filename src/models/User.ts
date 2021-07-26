@@ -1,7 +1,8 @@
-import { Schema, model, Document, PassportLocalModel } from "mongoose";
+import { Schema, model, Document, PassportLocalModel, PopulatedDoc } from "mongoose";
 import passportLocalMongoose from "passport-local-mongoose";
 import PostModel, { IPost } from "@/models/Post";
-import { UserModelName } from "@/models/_const";
+import { UserModelName, CommentModelName } from "@/models/_const";
+import { IComment } from "@/models/Comment"
 
 export interface IUser extends Document {
   username: string;
@@ -10,6 +11,7 @@ export interface IUser extends Document {
   avatar?: string;
   phoneNumber: string;
   score: number;
+  comments: PopulatedDoc<IComment>;
 
   createPost(post: Partial<IPost>): IPost;
 }
@@ -22,6 +24,10 @@ export const UserSchema = new Schema<IUser>(
     avatar: String,
     phoneNumber: { type: String, required: true },
     score: { type: Number, default: 0, required: true },
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: CommentModelName,
+    }],
   },
   { timestamps: true }
 );

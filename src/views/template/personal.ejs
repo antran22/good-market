@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="bg-secondary rounded p-5 m-3">
+        <div class="text-center">
+            <img src="https://yesimadesigner.com/wp-content/uploads/2020/01/pinterest-logo-e1579278449203.png" class="rounded mx-auto d-block" style="height: 300px;">
+            <h1><%= request.other.displayName %></h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="bg-secondary rounded p-3 m-3">
+                <h3>Intro</h3>
+                <h5>Phone number</h5>
+                <h6><%= request.other.phoneNumber %></h6>
+                <h5>Rating</h5>
+                <h6><%= request.other.score %></h6>
+                <h5>ID</h5>
+                <h6><%= request.other.id %></h6>
+            </div>
+            <div class="bg-secondary rounded p-3 m-3">
+                <form action="/user/<%= request.other._id %>/add" method="POST">
+                    <h4>Rate & Comment</h4>
+                    <input type="range" id="rating" name="rating" min="1" max="5">
+                    <input class="form-control mb-3" id="comment" name="comment">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="bg-secondary rounded p-3 m-3">
+                <h1 class="text-center">Comments</h1>
+                <% for(let i = 0; i < request.other.comments.length; i++ ) { %>
+                    <% if (request.other.comments[i] !== null) { %>
+                        <%- include("../partials/comment", request.other.comments[i]) %>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
