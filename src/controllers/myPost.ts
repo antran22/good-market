@@ -3,7 +3,8 @@ import {Router} from "express";
 const myPostRouter = Router()
 import PostModel from "@/models/Post";
 import multerUpload from "@/utils/multer";
-
+import * as fs from 'fs';
+import * as path from 'path';
 myPostRouter.get('/post/me', (req, res) => {
     // console.log(req.user);
     if (!req.isAuthenticated()) {
@@ -32,7 +33,7 @@ myPostRouter.get('/post/me/create',
             tags: [],
             seller: req.user._id
         });
-        res.renderTemplate('template/postCreator',{product:doc});
+        res.renderTemplate('template/postCreator', {product: doc});
     })
 
 
@@ -60,16 +61,16 @@ myPostRouter.post('/post/me/create',
         res.redirect('/post/me');
 
     })
-myPostRouter.get('/fix/:id', (req, res)=>{
+myPostRouter.get('/fix/:id', (req, res) => {
     if (!req.isAuthenticated()) {
         res.redirect('/login');
     } else {
 
-        const id = req.url.replace('/fix/:id','');
-        PostModel.findOne({_id:id, seller: req.user._id}, ).exec((err, doc)=>{
-            if(doc){
+        const id = req.url.replace('/fix/:id', '');
+        PostModel.findOne({_id: id, seller: req.user._id},).exec((err, doc) => {
+            if (doc) {
                 // console.log(doc);
-                res.renderTemplate('template/postCreator', {product:doc});
+                res.renderTemplate('template/postCreator', {product: doc});
             } else {
                 res.redirect('/post/me');
             }
@@ -79,51 +80,47 @@ myPostRouter.get('/fix/:id', (req, res)=>{
 });
 myPostRouter.post('/fix/:id',
     multerUpload.array("productImages"),
-    async (req, res)=>{
-    if (!req.isAuthenticated()) {
-        res.redirect('/login');
-    } else {
-        const id = req.url.replace('/fix/:id','');
-        let newPost = {
-            title: req.body.title,
-            images: [],
-            description: req.body.description,
-            price: req.body.price,
-        };
-        await PostModel.findOne({_id:id, seller: req.user._id}).exec((err, post)=>{
-            if(!post){
-                res.send("Can not find the product!")
-            } else {
-                console.log("this is from fix/:id"+id);
-                console.log(req.body);
-            }
-            newPost.images=post.images;
-        })
-        if (req.files && req.files.length ){
-            newPost.images=[];
-            for (let i = 0; i < req.files.length; i++) {
-                newPost.images.push(req.files[i].path);
-            }
+    async (req, res) => {
+        if (!req.isAuthenticated()) {
+            res.redirect('/login');
+        } else {
+            const id = req.url.replace('/fix/:id', '');
+            let newPost = {
+                title: req.body.title,
+                images: [],
+                description: req.body.description,
+                price: req.body.price,
+            };
+            await PostModel.findOne({_id: id, seller: req.user._id}).exec(async (err, post) => {
+                for (const image of post.images.values()) {
+                    newPost.images.push(image);
+                }
+                if ((req.files) && (req.files.length != 0) ) {
+                    newPost.images = [];
+                    for (let i = 0; i < req.files.length; i++) {
+                        newPost.images.push(req.files[i].path);
+                    }
+                }
+                await PostModel.updateOne({_id: id, seller: req.user._id}, newPost);
+
+            })
+            res.redirect('/post/me');
+
         }
-
-
-        // console.log(newPost);
-
-        const r = await PostModel.updateOne({_id:id, seller: req.user._id}, newPost);
-        // console.log(r.nModified);
-        res.redirect('/post/me');
-    }
-});
-myPostRouter.get('/post/me/delete/:id', async (req, res)=>{
+    });
+myPostRouter.get('/post/me/delete/:id', async (req, res) => {
     if (!req.isAuthenticated()) {
         res.redirect('/login');
     } else {
-        const id = req.url.replace('/post/me/delete/:id','');
-        PostModel.findOne({_id:id, seller: req.user._id}).exec((err, post)=>{
+        const id = req.url.replace('/post/me/delete/:id', '');
+        PostModel.findOne({_id: id, seller: req.user._id}).exec((err, post) => {
             console.log(post);
+            for (const image of post.images.values()) {
+                fs.unlinkSync(image);
+            }
         })
-        await PostModel.deleteOne({_id:id, seller: req.user._id});
-        console.log({_id:id, seller: req.user._id});
+        await PostModel.deleteOne({_id: id, seller: req.user._id});
+        console.log({_id: id, seller: req.user._id});
         res.redirect('/post/me');
     }
 });
