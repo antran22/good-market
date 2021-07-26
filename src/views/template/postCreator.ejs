@@ -1,4 +1,9 @@
-<form class="form-horizontal" action="/post/me/create" method="POST" enctype="multipart/form-data">
+
+<form class="form-horizontal" id="main-form" method="POST" enctype="multipart/form-data">
+    <script>
+        document.getElementById('main-form').action= window.location;
+        // alert(window.location)
+    </script>
     <fieldset>
 
         <!-- Form Name -->
@@ -8,7 +13,7 @@
         <div class="form-group">
             <label class="col-md-4 control-label" for="title">Product name</label>
             <div class="col-md-5">
-                <input id="title" name="title" type="text" placeholder="" class="form-control input-md" required="">
+                <input id="title" name="title" type="text" placeholder="" class="form-control input-md" required="" value="<%=product.title%>">
 
             </div>
         </div>
@@ -17,7 +22,7 @@
         <div class="form-group">
             <label class="col-md-4 control-label" for="description">Product description</label>
             <div class="col-md-4">
-                <textarea class="form-control" id="description" name="description"></textarea>
+                <textarea class="form-control" id="description" name="description"><%=product.description%></textarea>
             </div>
         </div>
 
@@ -25,36 +30,33 @@
         <div class="mb-3 row">
             <label for="productImages" class="form-label col-sm-2">Product Images</label>
             <div class="col-sm-10 border-2" style="width: 150px; height: 150px; box-sizing: content-box;">
-                <%- include("../partials/imageUpload", { fieldName: "productImages", defaultUrl: null }); %>
+                <%- include("../partials/imageUpload", { fieldName: "productImages", defaultUrl: '\\..\\' +product.images[0] }); %>
             </div>
         </div>
 
-        <!-- Text input-->
+        <!-- Number input-->
         <div class="form-group">
-            <label class="col-md-4 control-label" for="tags">Tags</label>
-            <div class="col-md-4">
-                <input id="tags" name="tags" type="text" placeholder="" class="form-control input-md">
-
+            <label class="col-md-4 control-label" for="price">Product price</label>
+            <div class="col-md-5">
+                <input id="price" name="price" type="number" class="form-control input-md" required="" value="<%=product.price%>">
             </div>
         </div>
-
-<!--        &lt;!&ndash; Button &ndash;&gt;-->
-<!--        <div class="form-group">-->
-<!--            <label class="col-md-4 control-label" for="createtag"></label>-->
-<!--            <div class="col-md-4">-->
-<!--                <button id="createtag" name="createtag" class="btn btn-primary" onclick="document.getElementById('tagcreator').style.display='block'">New tag</button>-->
-<!--            </div>-->
-<!--        </div>-->
-
 
         <!-- Button (Double) -->
         <div class="form-group">
             <div class="col-md-8">
-                <button id="upload" name="upload" class="btn btn-success" type="submit" >Upload</button>
-                <button id="cancel" name="cancel" class="btn btn-danger"  onclick="window.location = String(window.location).replace('/create',''); ">Cancel</button>
+                <button id="upload" name="upload" class="btn btn-success" type="submit" >Confirm</button>
             </div>
+
         </div>
 
     </fieldset>
 
 </form>
+<div class="col-md-9">
+    <button id="cancel" name="cancel" class="btn btn-warning"  onclick="window.history.back();">Cancel</button>
+    <button id="cancel" name="delete" class="btn btn-danger"  onclick="
+            alert('/post/me/delete/:id<%=product._id%>');
+            window.location = '/post/me/delete/:id<%=product._id%>'; ">Delete</button>
+</div>
+

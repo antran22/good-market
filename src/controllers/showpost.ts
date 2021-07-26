@@ -1,21 +1,21 @@
 import {Router} from "express";
-import Post from "@/models/Post";
 const showRouter = Router()
-import TagModel, {ITag} from "@/models/Tag" ;
 import PostModel from "@/models/Post";
-import {PopulatedDoc} from "mongoose";
-import {IUser} from "@/models/User";
 
 
-showRouter.get('/post/#', async function renderFilteredPost(req, res, next) {
-    console.log(req.query.postID);
-    PostModel.find({_id: req.query.postID}).exec(function (err, posts) {
-        const chunks = [];
-        for (let post of posts) {
-            chunks.push(post);
-        };
-        res.renderTemplate('template/post', {post: chunks});
-    });
+showRouter.get('/post/:id', (req, res, next) =>{
+    const id = req.url.replace('/post/:id','');
+    // res.send('you r searching product '+req.url.replace('/post/:id',''));
+    PostModel.findOne({_id:id}).exec((err, docs)=>{
+        let a = null;
+        if(docs){
+            a=docs;
+        }
+        // if (docs && docs.length >0){
+        //     a = docs[0];
+        // }
+        res.renderTemplate('template/post_full', {product: a});
+    })
 
 
 });
