@@ -92,14 +92,11 @@ myPostRouter.post('/fix/:id',
                 price: req.body.price,
             };
             await PostModel.findOne({_id: id, seller: req.user._id}).exec(async (err, post) => {
-                for (const image of post.images.values()) {
-                    newPost.images.push(image);
-                }
                 if ((req.files) && (req.files.length != 0) ) {
-                    newPost.images = [];
-                    for (let i = 0; i < req.files.length; i++) {
-                        newPost.images.push(req.files[i].path);
-                    }
+                    // @ts-ignore
+                    newPost.images = req.files.map(x=>x.path);
+                } else {
+                    newPost.images = post.images.map(x=>x);
                 }
                 await PostModel.updateOne({_id: id, seller: req.user._id}, newPost);
 
