@@ -7,4 +7,3 @@ export const authenticationGuard: Handler = (req, res, next) => {
   }
   return next();
 };
-

@@ -1,0 +1,40 @@
+<form class="container bg-light p-3 mb-5" id="form-create" method="POST" enctype="multipart/form-data">
+    <div class="form-floating mt-3">
+        <input id="title" name="title" type="text" placeholder="Title" class="form-control input-md" required
+               value="<%= post?.title ?? "" %>">
+        <label class="" for="title">Post title</label>
+    </div>
+    <div class="form-floating mt-3">
+        <textarea class="form-control" id="description" name="description" style="height: 200px;"
+                  placeholder="Body"
+                  required><%= post?.body ?? "" %></textarea>
+        <label class="" for="description">Post description</label>
+    </div>
+
+    <div class="form-floating mt-3">
+        <input id="price" name="price" type="number" class="form-control input-md" required
+               placeholder="Price"
+               value="<%= post?.price ?? "" %>">
+        <label class="" for="price">Post price</label>
+    </div>
+
+    <div class="mt-3">
+        <label for="images" class="form-label col-sm-4">Post Images (at most 5)</label>
+        <div>
+            <%- await include("../../partials/imageUpload", { fieldName: "images", defaultUrls: post?.images, count: 5 }); %>
+        </div>
+    </div>
+
+    <div class="mt-5 mb-3 d-flex justify-content-center">
+        <div class="d-flex m-3">
+            <button id="upload" name="upload" class="btn btn-success" type="submit">Create</button>
+        </div>
+        <div class="d-flex m-3">
+            <a href="/post" class="btn btn-warning">Cancel</a>
+        </div>
+    </div>
+
+
+</form>
+
+

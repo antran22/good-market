@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/css/login.css">
-<form class="" action="/register" method="POST"
+<form class="bg-light p-5" action="/register" method="POST"
       enctype="multipart/form-data">
     <h1>Register</h1>
     <div class="mb-3 mt-3 row">
@@ -17,8 +17,8 @@
     </div>
     <div class="mb-3 row">
         <label for="avatar" class="form-label col-sm-3">Avatar</label>
-        <div class="col-sm-9 border-2" style="width: 150px; height: 150px; box-sizing: content-box;">
-            <%- include("../partials/imageUpload", {fieldName: "avatar", defaultUrl: ""}); %>
+        <div class="col-sm-9 border-2">
+            <%- await include("../partials/imageUpload", {fieldName: "avatar", defaultUrls: [], count: 1}); %>
         </div>
     </div>
     <div class="mb-3 mt-3 row">

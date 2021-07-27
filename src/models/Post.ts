@@ -1,10 +1,8 @@
-import { Document, model, PopulatedDoc, Schema } from "mongoose";
+import { Document, Model, model, PopulatedDoc, Schema } from "mongoose";
 import { IUser } from "@/models/User";
-import { ITag } from "@/models/Tag";
 import {
   CommentModelName,
   PostModelName,
-  TagModelName,
   UserModelName,
 } from "@/models/_const";
 
@@ -14,12 +12,14 @@ export interface IPost extends Document {
   description: string;
   price: number;
   seller: PopulatedDoc<IUser>;
-  tags: PopulatedDoc<ITag>[];
+  tags: string[];
 }
+
+export interface IPostModel extends Model<IPost> {}
 
 const PostSchema = new Schema<IPost>(
   {
-    images: [{ type: String, require: true }],
+    images: [String],
     title: { type: String, require: true },
     description: { type: String, require: true },
     price: { type: Number, require: true, default: 0.0 },
@@ -28,13 +28,7 @@ const PostSchema = new Schema<IPost>(
       ref: UserModelName,
       required: true,
     },
-    tags: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: TagModelName,
-        required: true,
-      },
-    ],
+    tags: [String],
     comments: [
       {
         type: Schema.Types.ObjectId,
@@ -46,5 +40,5 @@ const PostSchema = new Schema<IPost>(
   { timestamps: true }
 );
 
-const PostModel = model<IPost>(PostModelName, PostSchema);
+const PostModel = model<IPost, IPostModel>(PostModelName, PostSchema);
 export default PostModel;

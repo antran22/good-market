@@ -41,9 +41,3 @@
 #logoIcon {
   height: 1em;
 }
-
-body {
-  background-image: url("/image/background.png");
-  background-repeat: no-repeat;
-  background-size: 100%;
-}

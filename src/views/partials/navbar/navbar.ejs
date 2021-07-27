@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light">
+<nav class="navbar navbar-expand-lg navbar-light mb-5">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <img id="logoIcon" src="/image/logo.png">
@@ -6,10 +6,10 @@
         </a>
         <ul class="navbar-nav d-flex flex-row">
             <% if (request.user) { %>
-                <%- include("./userNavOptions", {request}) %>
+                <%- await include("./userNavOptions", {request}) %>
             <% } else { %>
-                <%- include("./navLink", {request, url: "/login", title: "Login"}) %>
-                <%- include("./navLink", {request, url: "/register", title: "Register"}) %>
+                <%- await include("./navLink", {request, url: "/login", title: "Login"}) %>
+                <%- await include("./navLink", {request, url: "/register", title: "Register"}) %>
             <% } %>
         </ul>
     </div>

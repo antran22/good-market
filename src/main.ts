@@ -7,6 +7,7 @@ import morgan from "morgan";
 import compression from "compression";
 import bodyParser from "body-parser";
 import expressLayouts from "express-ejs-layouts";
+import ejs from "ejs";
 import flash from "connect-flash";
 
 import connectMongoDB from "@/config/mongoose";
@@ -19,6 +20,7 @@ import queryGetterUtils from "@/utils/queryGetters";
 import mainRouter from "@/controllers";
 import renderUtils from "@/utils/render";
 import { validationUtils } from "@/utils/validator";
+import errorHandler from "@/controllers/_error";
 
 connectMongoDB().then();
 
@@ -41,6 +43,14 @@ app.set("layout", "layouts/main_layout");
 app.use(expressLayouts);
 app.set("layout extractScripts", true);
 app.use(flash());
+app.engine("ejs", async (path, data, cb) => {
+  try {
+    const html = await ejs.renderFile(path, data, { async: true });
+    cb(null, html);
+  } catch (e) {
+    cb(e, "");
+  }
+});
 
 app.use(queryGetterUtils);
 app.use(validationUtils);
@@ -49,7 +59,9 @@ app.use(renderUtils);
 app.use(express.static(path.join(__dirname, "/public")));
 app.use(`/${env("UPLOAD_DIR")}`, express.static(env("UPLOAD_DIR")));
 
-app.use(mainRouter);
+app.use("/", mainRouter);
+
+app.use(errorHandler);
 
 const port: number = env.int("SERVER_PORT", 3000);
 const host: string = env("SERVER_HOST", "0.0.0.0");

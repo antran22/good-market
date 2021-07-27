@@ -1,13 +1,12 @@
 import { Router } from "express";
 import passport from "passport";
-import UserModel from "@/models/User";
-import {
-  displayNameInFormValidator,
-  passwordInFormValidator,
-  phoneNumberInFormValidator,
-  usernameInFormValidator,
-} from "@/utils/validator";
-import multerUpload from "@/utils/multer";
+import UserModel, {
+  validateDisplayName,
+  validatePassword,
+  validatePhoneNumber,
+  validateUserName,
+} from "@/models/User";
+import multerUpload from "@/config/multer";
 
 const authenticateRouter = Router();
 
@@ -15,7 +14,7 @@ authenticateRouter.get("/login", function renderLoginView(req, res) {
   if (req.isAuthenticated()) {
     res.redirect("/");
   }
-  res.renderTemplate("template/login");
+  return res.renderTemplate("templates/login");
 });
 
 authenticateRouter.post(
@@ -32,36 +31,37 @@ authenticateRouter.get("/register", function renderRegisterView(req, res) {
   if (req.isAuthenticated()) {
     res.redirect("/");
   }
-  res.renderTemplate("template/register", { defaultBody: null });
+  return res.renderTemplate("templates/register", { defaultBody: null });
 });
 
 authenticateRouter.post(
   "/register",
   multerUpload.single("avatar"),
-  passwordInFormValidator,
-  usernameInFormValidator,
-  displayNameInFormValidator,
-  phoneNumberInFormValidator,
+  validatePassword,
+  validateUserName,
+  validateDisplayName,
+  validatePhoneNumber,
   function registerUser(req, res) {
     const validationErrors = req.validate();
     if (!validationErrors.isEmpty()) {
       req.flashValidationErrors(validationErrors);
-      return res.renderTemplate("template/register", {
+      return res.renderTemplate("templates/register", {
         defaultBody: req.body,
       });
     }
+    const avatarPath = req.file?.path;
     UserModel.register(
       new UserModel({
         username: req.body.username,
         displayName: req.body.displayName,
         phoneNumber: req.body.phoneNumber,
-        avatar: req.file?.path ?? null,
+        avatar: avatarPath ? "/" + avatarPath : null,
       }),
       req.body.password,
       function (err: Error, user) {
         if (err) {
           req.flash("error", `Register failed: ${err.message}`);
-          return res.renderTemplate("template/register", {
+          return res.renderTemplate("templates/register", {
             defaultBody: req.body,
           });
         }

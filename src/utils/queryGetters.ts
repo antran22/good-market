@@ -106,15 +106,9 @@ const queryGetterUtils: Handler = (req, res, next) => {
     return Math.max(0, offset ?? 0);
   };
 
-  req.getLimitQuery = (max?: number): number => {
+  req.getLimitQuery = (): number => {
     const limit = req.getQueryInt("limit");
-    if (max) {
-      return clamp(limit ?? 10, 0, max);
-    }
-    if (_.isNil(limit)) {
-      return -1;
-    }
-    return Math.max(limit, 0);
+    return clamp(limit ?? 10, 0, 10);
   };
 
   req.getQueryIntRequired = (name: string): number => {

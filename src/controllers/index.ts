@@ -1,27 +1,27 @@
-import {Router} from "express";
-import {authenticationGuard} from "./_utils";
+import { Router } from "express";
+import { authenticationGuard } from "./_utils";
 import authenticateRouter from "./authenticate";
-import personalPageRouter from "./personal";
-import bioRouter from "./bio";
-import myPostRouter from "@/controllers/myPost";
-import showRouter from "@/controllers/showpost";
+import personalDataRouter from "./personal";
+import userPageRouter from "@/controllers/user";
+import commentRouter from "@/controllers/comment";
+import postRouter from "@/controllers/post";
 
 const mainRouter = Router();
 
 mainRouter.get("/", function renderHome(req, res) {
-    res.renderTemplate("template/index");
+  return res.renderTemplate("templates/index");
 });
 
 mainRouter.use(authenticateRouter);
 
-mainRouter.use(bioRouter);
+mainRouter.use(userPageRouter);
 
-mainRouter.use(myPostRouter);
-
-mainRouter.use(showRouter);
+mainRouter.use(postRouter);
 
 mainRouter.use(authenticationGuard);
 
-mainRouter.use(personalPageRouter);
+mainRouter.use(personalDataRouter);
+
+mainRouter.use(commentRouter);
 
 export default mainRouter;
