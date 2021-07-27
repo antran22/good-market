@@ -66,7 +66,7 @@ myPostRouter.get('/fix/:id', (req, res) => {
         res.redirect('/login');
     } else {
 
-        const id = req.url.replace('/fix/:id', '');
+        const id = req.params.id;
         PostModel.findOne({_id: id, seller: req.user._id},).exec((err, doc) => {
             if (doc) {
                 // console.log(doc);
@@ -84,7 +84,7 @@ myPostRouter.post('/fix/:id',
         if (!req.isAuthenticated()) {
             res.redirect('/login');
         } else {
-            const id = req.url.replace('/fix/:id', '');
+            const id = req.params.id;
             let newPost = {
                 title: req.body.title,
                 images: [],
@@ -109,7 +109,7 @@ myPostRouter.get('/post/me/delete/:id', async (req, res) => {
     if (!req.isAuthenticated()) {
         res.redirect('/login');
     } else {
-        const id = req.url.replace('/post/me/delete/:id', '');
+        const id = req.params.id;
         PostModel.findOne({_id: id, seller: req.user._id}).exec((err, post) => {
             console.log(post);
             for (const image of post.images.values()) {

@@ -56,7 +56,7 @@
 <div class="col-md-9">
     <button id="cancel" name="cancel" class="btn btn-warning"  onclick="window.history.back();">Cancel</button>
     <button id="cancel" name="delete" class="btn btn-danger"  onclick="
-            alert('/post/me/delete/:id<%=product._id%>');
-            window.location = '/post/me/delete/:id<%=product._id%>'; ">Delete</button>
+            alert('/post/me/delete/<%=product._id%>');
+            window.location = '/post/me/delete/<%=product._id%>'; ">Delete</button>
 </div>
 

@@ -13,14 +13,14 @@
     <div class="col-sm-6 col-md-4">
         <div class="thumbnail">
             <img src='<%= '\\..\\' + product.images[0] %>' alt="..." class="img-responsive thumbnail-brief"
-                 onclick="window.location.pathname = '/post/:id'+'<%= product._id %>'">
+                 onclick="window.location.pathname = '/post/'+'<%= product._id %>'">
             <div class="caption">
                 <h3><%= product.title %></h3>
                 <p class="description"><%= product.description %></p>
                 <div class="clearfix">
                     <div class="price pull-left">$<%= product.price %></div>
                     <% if (isSeller){ %>
-                        <a href="/fix/:id<%= product._id %>" class="btn btn-success pull-right" role="button">Fix</a>
+                        <a href="/fix/<%= product._id %>" class="btn btn-success pull-right" role="button">Fix</a>
                     <% } else { %>
                         <a id='remove<%= product._id %>'
                            style="display: none"
