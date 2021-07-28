@@ -1,0 +1,15 @@
+<form action="/post/<%= post._id %>/comment" method="POST">
+    <div class="mt-1 mb-3" style="display: none">
+    <%- await include("../starInput", {fieldName: "rating"}) %>
+    </div>
+    <div class="form-floating mb-3">
+        <input class="form-control" id="title" name="title" required placeholder="Tiêu đề"/>
+        <label for="title">Tiêu đề</label>
+    </div>
+    <div class="form-floating mb-3">
+        <textarea class="form-control" id="content" name="content" style="height: 150px" required
+                  placeholder="Nội dung"></textarea>
+        <label for="content">Nội dung</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

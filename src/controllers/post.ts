@@ -5,6 +5,7 @@ import * as fs from "fs";
 import { authenticationGuard } from "@/controllers/_utils";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/exceptions";
 import {padWithSlash} from "@/utils";
+import CommentModel, { validateCommentContent, validateCommentRating, validateCommentTitle } from "@/models/Comment";
 
 const postRouter = Router();
 
@@ -133,12 +134,44 @@ postRouter.get("/post", async function renderPostList(req, res) {
   return res.renderTemplate("templates/post/list", { posts });
 });
 
-postRouter.get("/post/:id", async function renderSinglePost(req, res) {
-  const post = await PostModel.findByIdFullyPopulated(req.params.id);
-  if (!post) {
-    throw new NotFoundError(`No post with id ${req.params.id} existing`);
+postRouter.get(
+  "/post/:id", 
+  async function renderSinglePost(req, res) {
+    const post = await PostModel.findByIdFullyPopulated(req.params.id);
+    if (!post) {
+      throw new NotFoundError(`No post with id ${req.params.id} existing`);
+    }
+    return res.renderTemplate("templates/post/view", { post });
   }
-  return res.renderTemplate("templates/post/view", { post });
-});
+);
+
+postRouter.post(
+  "/post/:id/comment",
+  authenticationGuard,
+  validateCommentTitle,
+  validateCommentRating,
+  validateCommentContent,
+
+  async function addComment(req, res) {
+    const errors = req.validate();
+    if(!errors.isEmpty()) {
+      req.flashValidationErrors(errors);
+      return res.redirect("back");
+    }
+
+    const post: IPost = await PostModel.findById(req.params.id);
+    const newComment = new CommentModel({
+      rating: req.body.rating,
+      title: req.body.title,
+      content: req.body.content,
+      author: req.user,
+    });
+
+    await newComment.save();
+    post.comments.push(newComment);
+    await post.save();
+    res.redirect("back");
+  }
+);
 
 export default postRouter;
