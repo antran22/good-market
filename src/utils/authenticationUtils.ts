@@ -13,11 +13,17 @@ declare global {
 
 const authenticationUtils: Handler = (req, res, next) => {
   req.isMe = function (user: IUser | ObjectId): boolean {
-    if (_.has(user, "_id")) {
-      return req.user._id.equals(user["_id"]);
+    if (!_.has(req.user, "_id")){
+      return false;
     } else {
-      return req.user._id.equals(user);
+      if (_.has(user, "_id")) {
+        return req.user._id.equals(user["_id"]);
+      } else {
+        return req.user._id.equals(user);
+      }
     }
+
+
   };
   next();
 };
