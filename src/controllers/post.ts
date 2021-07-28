@@ -84,7 +84,7 @@ postRouter.post(
     post.price = req.body.price;
     post.tags = req.body.tags;
 
-    if (req.files && req.files instanceof Array) {
+    if (req.files && req.files instanceof Array && req.files.length>0) {
       post.images = req.files.map((file) => padWithSlash(file.path));
     }
 
