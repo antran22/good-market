@@ -149,7 +149,6 @@ postRouter.post(
   "/post/:id/comment",
   authenticationGuard,
   validateCommentTitle,
-  validateCommentRating,
   validateCommentContent,
 
   async function addComment(req, res) {
@@ -161,7 +160,6 @@ postRouter.post(
 
     const post: IPost = await PostModel.findById(req.params.id);
     const newComment = new CommentModel({
-      rating: req.body.rating,
       title: req.body.title,
       content: req.body.content,
       author: req.user,
