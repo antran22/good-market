@@ -68,7 +68,7 @@ postRouter.get(
 postRouter.post(
   "/post/:id/edit",
   authenticationGuard,
-  multerUpload.array("images"),
+  multerUpload.array("images[]"),
   async function editPost(req, res, next) {
     const post: IPost = await PostModel.findById(req.params.id);
 
@@ -80,7 +80,7 @@ postRouter.post(
     }
 
     post.title = req.body.title;
-    post.description = req.body.body;
+    post.description = req.body.description;
     post.price = req.body.price;
     post.tags = req.body.tags;
 
@@ -89,11 +89,11 @@ postRouter.post(
     }
 
     await post.save();
-    res.redirect("/my-post");
+    res.redirect("/post");
   }
 );
 
-postRouter.post(
+postRouter.get(
   "/post/:id/delete",
   authenticationGuard,
   async function deletePost(req, res) {
@@ -103,7 +103,7 @@ postRouter.post(
     if (!post) {
       throw new NotFoundError(`No post with id ${req.params.id} existing`);
     }
-    if (post.seller !== req.user._id) {
+    if (post.seller.toString() != req.user._id.toString()) {
       throw new ForbiddenError("You cannot delete other people's post");
     }
 
@@ -112,7 +112,7 @@ postRouter.post(
     });
     post.delete();
 
-    res.redirect("me/post");
+    res.redirect("/post");
   }
 );
 
@@ -140,5 +140,6 @@ postRouter.get("/post/:id", async function renderSinglePost(req, res) {
   }
   return res.renderTemplate("templates/post/view", { post });
 });
+
 
 export default postRouter;
