@@ -12,7 +12,7 @@ commentPageRouter.get(
     if (!comment) {
       throw new NotFoundError(`Cannot find comment with id ${req.params.id}`);
     }
-    if (!comment.author.equals(req.user._id)) {
+    if (!req.isMe(comment.author)) {
       throw new ForbiddenError("You cannot delete other people's comments");
     }
     await comment.delete();
@@ -34,7 +34,7 @@ commentPageRouter.post(
     if (!comment) {
       throw new NotFoundError(`Cannot find comment with id ${req.params.id}`);
     }
-    if (!comment.author.equals(req.user._id)) {
+    if (!req.isMe(comment.author)) {
       throw new ForbiddenError("You cannot delete other people's comments");
     }
 

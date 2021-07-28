@@ -4,6 +4,7 @@ import multerUpload from "@/config/multer";
 import * as fs from "fs";
 import { authenticationGuard } from "@/controllers/_utils";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/exceptions";
+import {padWithSlash} from "@/utils";
 
 const postRouter = Router();
 
@@ -37,7 +38,7 @@ postRouter.post(
     }
     const newPost = new PostModel({
       title: req.body.title,
-      images: req.files.map((file) => file.path),
+      images: req.files.map((file) => padWithSlash(file.path)),
       description: req.body.description,
       price: req.body.price,
       tag: req.body.tag ?? [],
@@ -57,7 +58,7 @@ postRouter.get(
     if (!post) {
       throw new NotFoundError(`No post with id ${req.params.id} existing`);
     }
-    if (!post.seller.equals(req.user._id)) {
+    if (!req.isMe(post.seller)) {
       throw new ForbiddenError(`You cannot edit other people's post`);
     }
     return res.renderTemplate("templates/post/edit", { post });
@@ -74,7 +75,7 @@ postRouter.post(
     if (!post) {
       throw new NotFoundError(`No post with id ${req.params.id} existing`);
     }
-    if (!post.seller.equals(req.user._id)) {
+    if (!req.isMe(post.seller)) {
       throw new ForbiddenError(`You cannot edit other people's post`);
     }
 
@@ -84,7 +85,7 @@ postRouter.post(
     post.tags = req.body.tags;
 
     if (req.files && req.files instanceof Array) {
-      post.images = req.files.map((file) => file.path);
+      post.images = req.files.map((file) => padWithSlash(file.path));
     }
 
     await post.save();
@@ -128,17 +129,16 @@ postRouter.get("/post", async function renderPostList(req, res) {
   if (user) {
     query = query.where("seller", user);
   }
-
   const posts = await query;
   return res.renderTemplate("templates/post/list", { posts });
 });
 
 postRouter.get("/post/:id", async function renderSinglePost(req, res) {
-  const post = await PostModel.findById(req.params.id);
+  const post = await PostModel.findByIdFullyPopulated(req.params.id);
   if (!post) {
     throw new NotFoundError(`No post with id ${req.params.id} existing`);
   }
-  return res.renderTemplate("templates/post/view");
+  return res.renderTemplate("templates/post/view", { post });
 });
 
 export default postRouter;

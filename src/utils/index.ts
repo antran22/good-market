@@ -65,3 +65,10 @@ export function joinArrayForProcedure(
   }
   return val.join(delim);
 }
+
+export function padWithSlash(path: string | null): string | null {
+  if (notNil(path)) {
+    return "/" + path;
+  }
+  return null;
+}

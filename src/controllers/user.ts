@@ -38,7 +38,6 @@ userPageRouter.post(
 
     const user: IUser = await UserModel.findById(req.params.id);
     const newComment = new CommentModel({
-      images: "",
       rating: req.body.rating,
       title: req.body.title,
       content: req.body.content,

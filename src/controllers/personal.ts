@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { reloadIfValidationFailed } from "@/utils/validator";
 import multerUpload from "@/config/multer";
-import { notNil } from "@/utils";
+import {notNil, padWithSlash} from "@/utils";
 import { validateDisplayName, validatePhoneNumber } from "@/models/User";
 
 const personalDataRouter = Router();
@@ -20,7 +20,7 @@ personalDataRouter.post(
     req.user.displayName = req.body.displayName;
     req.user.phoneNumber = req.body.phoneNumber;
     if (notNil(req.file)) {
-      req.user.avatar = "/" + req.file.path;
+      req.user.avatar = padWithSlash(req.file.path);
     }
     await req.user.save();
     res.redirect("back");

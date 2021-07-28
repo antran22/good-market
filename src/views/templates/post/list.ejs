@@ -1,4 +1,4 @@
 <a class="btn btn-info" href="/post/create">Create new post</a>
 <% for (const post of posts){ %>
-    <%- await include("../../partials/postBrief", { post }); %>
+    <%- await include("../../partials/post/listing", { post }); %>
 <% } %>

@@ -1,15 +1,12 @@
 <div class="container">
     <div class="bg-light rounded p-5 m-3 position-relative">
-        <% if (user._id.equals(request.user._id)) { %>
+        <% if (request.isMe(user)) { %>
             <a class="btn btn-info position-absolute end-0 top-0 m-2" href="/me">Edit</a>
         <% } %>
         <div class="text-center">
-            <% if (user.avatar) { %>
-                <img class="rounded-circle bg-dark" src="<%= user.avatar %>" alt="<%= user.username %>'s avatar"
-                     style="height: 100px; width: 100px;"/>
-            <% } else { %>
-                <div class="rounded-circle bg-dark container" style="height: 100px; width: 100px;"></div>
-            <% } %>
+            <div style="height: 150px; width: 150px" class="container p-0">
+                <%- await include("../partials/avatar", {avatar: user.avatar}) %>
+            </div>
             <h1 class="mt-3"><%= user.displayName %></h1>
         </div>
     </div>
@@ -32,7 +29,7 @@
                 </div>
                 <% for(let i = 0; i < user.comments.length; i++ ) { %>
                     <% if (user.comments[i] !== null) { %>
-                        <%- await include("../partials/comment/show", {comment: user.comments[i]}) %>
+                        <%- await include("../partials/comment/listing", {comment: user.comments[i]}) %>
                     <% } %>
                 <% } %>
             </div>

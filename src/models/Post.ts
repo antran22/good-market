@@ -5,6 +5,7 @@ import {
   PostModelName,
   UserModelName,
 } from "@/models/_const";
+import { IComment } from "@/models/Comment";
 
 export interface IPost extends Document {
   images: string[];
@@ -13,9 +14,12 @@ export interface IPost extends Document {
   price: number;
   seller: PopulatedDoc<IUser>;
   tags: string[];
+  comments: PopulatedDoc<IComment>;
 }
 
-export interface IPostModel extends Model<IPost> {}
+export interface IPostModel extends Model<IPost> {
+  findByIdFullyPopulated(id: string): Promise<IPost>;
+}
 
 const PostSchema = new Schema<IPost>(
   {
@@ -39,6 +43,13 @@ const PostSchema = new Schema<IPost>(
   },
   { timestamps: true }
 );
+
+PostSchema.statics.findByIdFullyPopulated = function (id: string) {
+  return PostModel.findById(id).populate("seller").populate({
+    path: "comments",
+    populate: "author",
+  });
+};
 
 const PostModel = model<IPost, IPostModel>(PostModelName, PostSchema);
 export default PostModel;

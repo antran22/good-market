@@ -21,6 +21,7 @@ import mainRouter from "@/controllers";
 import renderUtils from "@/utils/render";
 import { validationUtils } from "@/utils/validator";
 import errorHandler from "@/controllers/_error";
+import authenticationUtils from "@/utils/authenticationUtils";
 
 connectMongoDB().then();
 
@@ -54,6 +55,7 @@ app.engine("ejs", async (path, data, cb) => {
 
 app.use(queryGetterUtils);
 app.use(validationUtils);
+app.use(authenticationUtils);
 app.use(renderUtils);
 
 app.use(express.static(path.join(__dirname, "/public")));

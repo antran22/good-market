@@ -7,6 +7,7 @@ import UserModel, {
   validateUserName,
 } from "@/models/User";
 import multerUpload from "@/config/multer";
+import {padWithSlash} from "@/utils";
 
 const authenticateRouter = Router();
 
@@ -49,13 +50,12 @@ authenticateRouter.post(
         defaultBody: req.body,
       });
     }
-    const avatarPath = req.file?.path;
     UserModel.register(
       new UserModel({
         username: req.body.username,
         displayName: req.body.displayName,
         phoneNumber: req.body.phoneNumber,
-        avatar: avatarPath ? "/" + avatarPath : null,
+        avatar: padWithSlash(req.file?.path),
       }),
       req.body.password,
       function (err: Error, user) {
