@@ -5,6 +5,7 @@ import personalDataRouter from "./personal";
 import userPageRouter from "@/controllers/user";
 import commentRouter from "@/controllers/comment";
 import postRouter from "@/controllers/post";
+import messageRouter from "@/controllers/message";
 
 const mainRouter = Router();
 
@@ -23,5 +24,7 @@ mainRouter.use(authenticationGuard);
 mainRouter.use(personalDataRouter);
 
 mainRouter.use(commentRouter);
+
+mainRouter.use(messageRouter);
 
 export default mainRouter;

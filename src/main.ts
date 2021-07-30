@@ -22,6 +22,7 @@ import renderUtils from "@/utils/render";
 import { validationUtils } from "@/utils/validator";
 import errorHandler from "@/controllers/_error";
 import authenticationUtils from "@/utils/authenticationUtils";
+import * as globalViewVariables from "@/views/global";
 
 connectMongoDB().then();
 
@@ -46,7 +47,11 @@ app.set("layout extractScripts", true);
 app.use(flash());
 app.engine("ejs", async (path, data, cb) => {
   try {
-    const html = await ejs.renderFile(path, data, { async: true });
+    const html = await ejs.renderFile(
+      path,
+      { ...data, global: globalViewVariables },
+      { async: true }
+    );
     cb(null, html);
   } catch (e) {
     cb(e, "");

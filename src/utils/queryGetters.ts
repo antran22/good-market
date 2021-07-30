@@ -16,7 +16,7 @@ declare global {
 
       getQueryInt(name: string): number | null;
 
-      getOffsetQuery(): number;
+      getPageQuery(): number;
 
       getLimitQuery(max: number): number;
 
@@ -101,8 +101,8 @@ const queryGetterUtils: Handler = (req, res, next) => {
     return result;
   };
 
-  req.getOffsetQuery = (): number => {
-    const offset = req.getQueryInt("offset");
+  req.getPageQuery = (): number => {
+    const offset = req.getQueryInt("page");
     return Math.max(0, offset ?? 0);
   };
 

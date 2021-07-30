@@ -1,11 +1,22 @@
 import { Router } from "express";
-import PostModel, { IPost } from "@/models/Post";
+import PostModel, {
+  IPost,
+  validatePostDescription,
+  validatePostPrice,
+  validatePostTags,
+  validatePostTitle,
+} from "@/models/Post";
 import multerUpload from "@/config/multer";
 import * as fs from "fs";
 import { authenticationGuard } from "@/controllers/_utils";
 import { BadRequestError, ForbiddenError, NotFoundError } from "@/exceptions";
-import {padWithSlash} from "@/utils";
-import CommentModel, { validateCommentContent, validateCommentRating, validateCommentTitle } from "@/models/Comment";
+import { padWithSlash } from "@/utils";
+import CommentModel, {
+  validateCommentContent,
+  validateCommentRating,
+  validateCommentTitle,
+} from "@/models/Comment";
+import { reloadIfValidationFailed } from "@/utils/validator";
 
 const postRouter = Router();
 
@@ -20,7 +31,13 @@ postRouter.get(
 postRouter.post(
   "/post/create",
   authenticationGuard,
-  multerUpload.array("images[]"),
+  multerUpload.array("images[]", 5),
+
+  validatePostTitle,
+  validatePostDescription,
+  validatePostPrice,
+  validatePostTags,
+
   async function createPost(req, res) {
     const errors = req.validate();
     if (!errors.isEmpty()) {
@@ -30,6 +47,7 @@ postRouter.post(
           title: req.body.title,
           description: req.body.description,
           price: req.body.price,
+          tags: req.body.tags,
         },
       });
     }
@@ -42,7 +60,7 @@ postRouter.post(
       images: req.files.map((file) => padWithSlash(file.path)),
       description: req.body.description,
       price: req.body.price,
-      tag: req.body.tag ?? [],
+      tags: req.body.tags ?? [],
       seller: req.user._id,
     });
 
@@ -69,7 +87,12 @@ postRouter.get(
 postRouter.post(
   "/post/:id/edit",
   authenticationGuard,
-  multerUpload.array("images[]"),
+  multerUpload.array("images[]", 5),
+  validatePostTitle,
+  validatePostDescription,
+  validatePostPrice,
+  validatePostTags,
+  reloadIfValidationFailed,
   async function editPost(req, res, next) {
     const post: IPost = await PostModel.findById(req.params.id);
 
@@ -85,7 +108,7 @@ postRouter.post(
     post.price = req.body.price;
     post.tags = req.body.tags;
 
-    if (req.files && req.files instanceof Array && req.files.length>0) {
+    if (req.files && req.files instanceof Array && req.files.length > 0) {
       post.images = req.files.map((file) => padWithSlash(file.path));
     }
 
@@ -108,9 +131,6 @@ postRouter.get(
       throw new ForbiddenError("You cannot delete other people's post");
     }
 
-    post.images.forEach((image) => {
-      fs.unlink(image, () => {});
-    });
     post.delete();
 
     res.redirect("/post");
@@ -118,46 +138,35 @@ postRouter.get(
 );
 
 postRouter.get("/post", async function renderPostList(req, res) {
-  const limit = req.getLimitQuery();
-  const offset = req.getOffsetQuery();
   let user = req.getQuery("user");
-
-  let query = PostModel.find().limit(limit).skip(offset);
-
+  let query = PostModel.find();
   if (user === "me" && req.isAuthenticated()) {
     user = req.user._id;
   }
   if (user) {
     query = query.where("seller", user);
   }
+
   const posts = await query;
   return res.renderTemplate("templates/post/list", { posts });
 });
 
-postRouter.get(
-  "/post/:id", 
-  async function renderSinglePost(req, res) {
-    const post = await PostModel.findByIdFullyPopulated(req.params.id);
-    if (!post) {
-      throw new NotFoundError(`No post with id ${req.params.id} existing`);
-    }
-    return res.renderTemplate("templates/post/view", { post });
+postRouter.get("/post/:id", async function renderSinglePost(req, res) {
+  const post = await PostModel.findByIdFullyPopulated(req.params.id);
+  if (!post) {
+    throw new NotFoundError(`No post with id ${req.params.id} existing`);
   }
-);
+  return res.renderTemplate("templates/post/view", { post });
+});
 
 postRouter.post(
   "/post/:id/comment",
   authenticationGuard,
   validateCommentTitle,
   validateCommentContent,
+  reloadIfValidationFailed,
 
   async function addComment(req, res) {
-    const errors = req.validate();
-    if(!errors.isEmpty()) {
-      req.flashValidationErrors(errors);
-      return res.redirect("back");
-    }
-
     const post: IPost = await PostModel.findById(req.params.id);
     const newComment = new CommentModel({
       title: req.body.title,
@@ -171,6 +180,5 @@ postRouter.post(
     res.redirect("back");
   }
 );
-
 
 export default postRouter;
