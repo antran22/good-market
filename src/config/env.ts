@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
-import { resolve as pathResolve } from "path";
+import { resolve as pathResolve, join as pathJoin } from "path";
 import _ from "lodash";
-import { parseBoolean } from "../utils";
+import { parseBoolean } from "@/utils";
 
 const envPath = pathResolve(process.cwd(), process.env.ENV_FILE ?? ".env");
 const environment = dotenv.config({
@@ -53,7 +53,7 @@ env.isNodeEnv = (nodeEnv: NodeEnv): boolean => {
 };
 
 env.projectPath = (...paths: string[]): string => {
-  return pathResolve(process.cwd(), ...paths);
+  return pathJoin(process.cwd(), ...paths);
 };
 
 export default env;

@@ -1,16 +1,12 @@
-<div class="p-3 mt-3 mb-3 bg-light rounded">
-    <div class="row">
-        <div class="col-xl-1 col-lg-2 col-sm-3">
-            <% if ( comment.author.avatar ) { %>
-                <img src="<%= comment.author.avatar %>" class="rounded-circle" width="50px" height="50px"
-                     alt="<%= comment.author.displayName %>'s avatar"/>
-            <% } else { %>
-                <div class="bg-dark rounded-circle" style="height: 50px; width: 50px;"></div>
-            <% } %>
+<div class="row">
+    <div class="col-xl-1 col-lg-2 col-sm-3">
+        <div style="width: 50px; height: 50px">
+            <%- await include("../avatar", {avatar: comment.author.avatar}); %>
         </div>
-        <div class="col-xl-9 col-lg-8 col-sm-9">
-
-            <a href="/user/<%= comment.author._id %>"><%= comment.author.displayName %></a>
+    </div>
+    <div class="col-xl-9 col-lg-8 col-sm-9">
+        <a href="/user/<%= comment.author._id %>"><%= comment.author.displayName %></a>
+        <% if (showRating) { %>
             <div class="mb-0">
                 <% for (let i = 1; i <= comment.rating; ++i) { %>
                     <i class="bi bi-star-fill text-danger"></i>
@@ -19,17 +15,24 @@
                     <i class="bi bi-star text-danger"></i>
                 <% } %>
             </div>
-            <div class="mb-2">
-                <i class="text-secondary"><%= new Date(comment.createdAt).toDateString() %></i>
-            </div>
-            <h5><%= comment.title %></h5>
-            <p><%= comment.content %></p>
+        <% } %>
+        <div class="mb-2">
+            <i class="text-secondary"><%= new Date(comment.createdAt).toDateString() %></i>
         </div>
-        <div class="col-lg-2">
-            <% if (request.isMe(comment.author)) { %>
-                <a class="btn btn-primary float-right" href="/comment/<%= comment._id %>/delete">Delete</a>
-            <% } %>
-        </div>
+        <h5><%= comment.title %></h5>
+        <p><%= comment.content %></p>
     </div>
-
+    <% if (request.isMe(comment.author)) { %>
+        <div class="col-lg-2">
+            <div class="float-end">
+                <%- await include("../../partials/deleteButton", {
+                    _id: comment._id,
+                    target: "/comment/" + comment._id + "/delete",
+                    iconButton: true
+                }) %>
+            </div>
+        </div>
+    <% } %>
 </div>
+
+

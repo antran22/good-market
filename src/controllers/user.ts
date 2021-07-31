@@ -8,6 +8,7 @@ import CommentModel, {
 import { notNil } from "@/utils";
 import { NotFoundError } from "@/exceptions";
 import { authenticationGuard } from "@/controllers/_utils";
+import {reloadIfValidationFailed} from "@/utils/validator";
 
 const userPageRouter = Router();
 
@@ -28,14 +29,9 @@ userPageRouter.post(
   validateCommentTitle,
   validateCommentRating,
   validateCommentContent,
+  reloadIfValidationFailed,
 
   async function addComment(req, res) {
-    const errors = req.validate();
-    if (!errors.isEmpty()) {
-      req.flashValidationErrors(errors);
-      return res.redirect("back");
-    }
-
     const user: IUser = await UserModel.findById(req.params.id);
     const newComment = new CommentModel({
       rating: req.body.rating,
@@ -50,5 +46,6 @@ userPageRouter.post(
     res.redirect("back");
   }
 );
+
 
 export default userPageRouter;

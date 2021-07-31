@@ -1,26 +1,31 @@
-<div class="row mt-5 mb-5 bg-light">
-    <div class="col-sm-6 col-md-4">
-        <div class="thumbnail">
+
+<div class="mt-5 bg-light p-2 rounded-3 position-relative">
+    <div class="row">
+        <div class="col-12 col-sm-4 col-md-3 col-lg-2 position-relative">
             <img src='<%= post.images[0] %>' alt="<%= post.title %>'s thumbnail image"
-                 class="img-responsive thumbnail-brief">
-            <div class="caption">
-                <h3><a href="/post/<%= post._id %>"><%= post.title %></a></h3>
-                <p class="description"><%= post.description %></p>
-                <div class="clearfix">
-                    <div class="price pull-left">$<%= post.price %></div>
-                    <% if (!request.user) { %>
-                        <a href="/login">Login to view</a>
-                    <% } else { %>
-                        <% if (request.isMe(post.seller)){ %>
-                            <a href="/post/<%= post._id %>/edit" class="btn btn-success pull-right"
-                               role="button">Edit</a>
-                        <% } else { %>
-                            <a class="btn pull-left btn-info" role="button" href="/user/<%= post.seller._id %>">Talk to
-                                seller</a>
-                        <% } %>
-                    <% } %>
-                </div>
-            </div>
+                 class="img-thumbnail m-0">
+            <span class="position-absolute text-light" style="top: 10px; left: 30px;">
+                <i class="bi bi-camera-fill"></i>
+                <%= post.images.length %>
+            </span>
+        </div>
+        <div class="mt-5 mt-sm-0 col-12 col-sm-8 col-md-9 col-lg-10">
+            <h3><a class="text-decoration-none" href="/post/<%= post._id %>"><%= post.title %></a></h3>
+            <p><%= global.brief(post.description, 100) %></p>
+            <h6 class="text-danger"><%= global.currencyFormatter.format(post.price) %></h6>
+            <% if (!request.user) { %>
+                <a href="/login">Login to view</a>
+            <% } else if (!request.isMe(post.seller)){ %>
+                <a class="btn btn-info" role="button" href="/user/<%= post.seller._id %>">Talk to
+                    seller</a>
+            <% } %>
         </div>
     </div>
+    <% if (request.isMe(post.seller)) { %>
+        <div class="position-absolute top-0 end-0 m-2">
+            <a href="/post/<%= post._id %>/edit" class="btn btn-primary" role="button">
+                <i class="bi bi-pencil"></i>
+            </a>
+        </div>
+    <% } %>
 </div>

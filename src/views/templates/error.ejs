@@ -1,8 +1,15 @@
 <div class="container">
     <h1><%= title %></h1>
-    <p>
-        <%= message %>
-    </p>
+    <% if (message.length < 20) { %>
+        <p>
+            <%= message %>
+        </p>
+    <% } else { %>
+        <pre class="bg-light p-3">
+            <%= message %>
+        </pre>
+    <% } %>
+    <br/>
     <b class="btn btn-info" onclick="window.history.back()">Go back</b>
     <a href="/" class="btn btn-info">Go home</a>
 </div>

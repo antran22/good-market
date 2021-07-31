@@ -1,43 +1,17 @@
 .auth-form {
-  max-width: 800px;
-}
-
-.file-input {
-  height: 100%;
-  width: 100%;
-}
-
-.file-input-text {
-  height: 100%;
-  width: 100%;
-}
-
-.file-input-preview {
-  height: 100%;
-  width: 100%;
-  background-size: cover;
-  background-position: center;
-  cursor: pointer;
-  transition-duration: 300ms;
-}
-
-.file-input-preview:hover {
-  opacity: 0;
-  transition-duration: 300ms;
-}
-.thumbnail img {
-  max-height: 150px;
-}
-
-.thumbnail .description {
-  color: #7f7f7f;
-}
-
-.price {
-  font-weight: bold;
-  font-size: 16px;
+    max-width: 800px;
 }
 
 #logoIcon {
-  height: 1em;
+    height: 1em;
+}
+
+body {
+    background: rgb(255, 255, 255);
+    background: linear-gradient(302deg, rgba(13, 110, 253, 0.2) 0%, rgba(102, 16, 242, 0.2) 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    height: 100%;
+    width: 100%;
 }

@@ -1,0 +1,15 @@
+<div class="mt-1 mb-3">
+    <% if (inputRating) { %>
+        <%- await include("../starInput", {fieldName: "rating"}) %>
+    <% } %>
+</div>
+<div class="form-floating mb-3">
+    <input class="form-control" id="title" name="title" required placeholder="Title"/>
+    <label for="title">Title</label>
+</div>
+<div class="form-floating mb-3">
+        <textarea class="form-control" id="content" name="content" style="height: 150px" required
+                  placeholder="Content"></textarea>
+    <label for="content">Content</label>
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>

@@ -1,0 +1,134 @@
+<div class="bg-light p-3 rounded-3">
+    <div class="d-flex flex-row align-items-center border-bottom border-secondary pb-3 mb-3">
+        <a class="btn btn-outline-secondary border-0 rounded-circle" href="/message">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div style="width: 50px; height: 50px" class="d-flex ms-2">
+            <%- await include("../../partials/avatar", {avatar: partner.avatar}) %>
+        </div>
+        <h4 class="d-flex ms-2 mb-0"><%= partner.displayName %></h4>
+    </div>
+    <ul class="mb-1 overflow-scroll p-3" id="message-list" style="height: 60vh">
+        <% for (let message of messages.reverse()) { %>
+            <% if (request.isMe(message.sender)) { %>
+                <li class="mt-2 d-flex flex-row-reverse">
+                    <span class="d-flex bg-primary text-light rounded-3 p-2"
+                          style="max-width: 45%"><%= message.text %></span>
+                </li>
+            <% } else { %>
+                <li class="mt-2 d-flex">
+                    <span class="bg-secondary text-light rounded-3 p-2"
+                          style="max-width: 45%"><%= message.text %></span>
+                </li>
+            <% } %>
+        <% } %>
+    </ul>
+
+    <form id="message-form" class="d-flex flex-row align-items-center">
+        <div class="form-floating d-flex me-4" style="flex-grow: 100">
+            <input id="message-input" type="text" name="text" class="form-control" placeholder="message"/>
+            <label id="message-label" for="message-input">Input your message</label>
+        </div>
+        <button type="submit" class="d-flex btn btn-outline-primary" style="flex-basis: 30px">
+            <i class="bi bi-cursor"></i>
+        </button>
+    </form>
+</div>
+
+<script>
+  const messageInput = $("#message-input");
+  const messageList = $("#message-list");
+  const messageLabel = $("#message-label");
+
+  const showError = (message) => {
+    messageLabel.text(message).addClass("text-danger");
+    messageInput.addClass("is-invalid").on("focus input", function () {
+      messageInput.off("input");
+      messageInput.removeClass("is-invalid");
+      messageLabel.text("Input your message").removeClass("text-danger");
+    });
+  }
+
+  let fetchable = true;
+  let oldestMessageTime = <%= messages[0]?.createdAt?.getTime() ?? new Date().getTime() %>
+  const fetchMoreMessages = () => {
+    if (!fetchable) {
+      return;
+    }
+    fetchable = false;
+    $.ajax("/message/<%= partner._id %>/fetch?oldestMessage=" + oldestMessageTime, {
+      type: "GET",
+      dataType: "json",
+      success: (data) => {
+        data.forEach(message => {
+          if (message.fromMe) {
+            messageList.prepend(`<li class="mt-2 d-flex flex-row-reverse">
+                    <span class="d-flex bg-primary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message.text}</span>
+                </li>`);
+          } else {
+            messageList.prepend(`<li class="mt-2 d-flex">
+                    <span class="bg-secondary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message.text}</span>
+                </li>`);
+          }
+        });
+        if (data.length > 0) {
+          fetchable = true;
+          oldestMessageTime = new Date(data.slice(-1)[0].createdAt).getTime();
+        }
+      },
+      error: (data) => {
+        console.error(data);
+        // showError(data.responseJSON.messages[0]);
+      }
+    });
+  }
+
+  $(document).ready(() => {
+    messageList.scrollTop(9999);
+    messageList.scroll(debounce(() => {
+      if (messageList.scrollTop() < 10) {
+        fetchMoreMessages();
+      }
+    }, 250));
+
+    $("#message-form").submit((event) => {
+      event.preventDefault();
+      const text = messageInput.val();
+      messageInput.val("");
+
+      if (text.length === 0) {
+        showError("Your message must not be empty");
+        return;
+      }
+
+      $.ajax("/message/<%= partner._id %>", {
+        type: "POST",
+        data: {
+          text
+        },
+        dataType: "json",
+        success: (data) => {
+          messageList.append(`<li class="mt-2 d-flex flex-row-reverse">
+                    <span class="d-flex bg-primary text-light rounded-3 p-2"
+                          style="max-width: 50%">${text}</span>
+                </li>`);
+          messageList.animate({scrollTop: messageList.prop("scrollHeight") + 100}, 300);
+        },
+        error: (data) => {
+          showError(data.responseJSON.messages[0]);
+        }
+      });
+    });
+
+    const socket = io();
+    socket.on("message", (message) => {
+      messageList.append(`<li class="mt-2 d-flex">
+                    <span class="bg-secondary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message}</span>
+                </li>`);
+      messageList.animate({scrollTop: messageList.prop("scrollHeight") + 100}, 300);
+    });
+  })
+</script>

@@ -2,9 +2,11 @@ import { Document, model, Model, PopulatedDoc, Schema } from "mongoose";
 import { IUser } from "@/models/User";
 import { CommentModelName, UserModelName } from "@/models/_const";
 import { body } from "express-validator";
+import fs from "fs";
+import env from "@/config/env";
 
 export interface IComment extends Document {
-  images: string;
+  images: string[];
   title: string;
   content: string;
   author: PopulatedDoc<IUser>;
@@ -34,6 +36,13 @@ CommentSchema.statics.findByIdWithAuthor = async function (
 ): Promise<IComment> {
   return this.findById(_id).populate("author");
 };
+
+CommentSchema.pre("remove", function (next) {
+  this.images.forEach((image) => {
+    fs.unlink(env.projectPath(image), console.error);
+  });
+  next();
+});
 
 const CommentModel = model<IComment, ICommentModel>(
   CommentModelName,

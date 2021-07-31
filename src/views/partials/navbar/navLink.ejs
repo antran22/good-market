@@ -1,11 +1,15 @@
 <li class="nav-item dropdown ps-1 pe-1">
     <% if (request.url === url) { %>
         <a class="nav-link active disabled" aria-current="page" href="<%= url %>">
-            <%= title %>
+            <% if (activeContent) { %>
+                <%- activeContent %>
+            <% } else { %>
+                <%- content %>
+            <% } %>
         </a>
     <% } else { %>
         <a class="nav-link" href="<%= url %>">
-            <%= title %>
+            <%- content %>
         </a>
     <% } %>
 </li>
