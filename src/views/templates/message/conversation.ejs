@@ -1,24 +1,24 @@
 <div class="bg-light p-3">
-    <div class="mb-1 overflow-scroll p-3 d-flex flex-column-reverse" id="message-list" style="height: 60vh">
-        <% for (let message of messages) { %>
+    <ul class="mb-1 overflow-scroll p-3" id="message-list" style="height: 60vh">
+        <% for (let message of messages.reverse()) { %>
             <% if (request.isMe(message.sender)) { %>
-                <div class="mt-2 d-flex flex-row-reverse">
+                <li class="mt-2 d-flex flex-row-reverse">
                     <span class="d-flex bg-primary text-light rounded-3 p-2"
-                          style="max-width: 50%"><%= message.text %></span>
-                </div>
+                          style="max-width: 45%"><%= message.text %></span>
+                </li>
             <% } else { %>
-                <div class="mt-2 d-flex">
+                <li class="mt-2 d-flex">
                     <span class="bg-secondary text-light rounded-3 p-2"
-                          style="max-width: 50%"><%= message.text %></span>
-                </div>
+                          style="max-width: 45%"><%= message.text %></span>
+                </li>
             <% } %>
         <% } %>
-    </div>
+    </ul>
 
     <form id="message-form" class="d-flex flex-row align-items-center">
         <div class="form-floating d-flex me-4" style="flex-grow: 100">
             <input id="message-input" type="text" name="text" class="form-control" placeholder="message"/>
-            <label id="message-label" for="message-input">Input message</label>
+            <label id="message-label" for="message-input">Input your message</label>
         </div>
         <button type="submit" class="d-flex btn btn-outline-primary" style="flex-basis: 30px">
             <i class="bi bi-cursor"></i>
@@ -27,18 +27,70 @@
 </div>
 
 <script>
+  const messageInput = $("#message-input");
+  const messageList = $("#message-list");
+  const messageLabel = $("#message-label");
+
+  const showError = (message) => {
+    messageLabel.text(message).addClass("text-danger");
+    messageInput.addClass("is-invalid").on("focus input", function () {
+      messageInput.off("input");
+      messageInput.removeClass("is-invalid");
+      messageLabel.text("Input your message").removeClass("text-danger");
+    });
+  }
+
+  let fetchable = true;
+  let oldestMessageTime = <%= messages[0].createdAt.getTime() %>
+  const fetchMoreMessages = () => {
+    if (!fetchable) {
+      return;
+    }
+    fetchable = false;
+    $.ajax("/message/<%= partner._id %>/fetch?oldestMessage=" + oldestMessageTime, {
+      type: "GET",
+      dataType: "json",
+      success: (data) => {
+        data.forEach(message => {
+          if (message.fromMe) {
+            messageList.prepend(`<li class="mt-2 d-flex flex-row-reverse">
+                    <span class="d-flex bg-primary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message.text}</span>
+                </li>`);
+          } else {
+            messageList.prepend(`<li class="mt-2 d-flex">
+                    <span class="bg-secondary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message.text}</span>
+                </li>`);
+          }
+        });
+        if (data.length > 0) {
+          fetchable = true;
+          oldestMessageTime = new Date(data.slice(-1)[0].createdAt).getTime();
+        }
+      },
+      error: (data) => {
+        console.error(data);
+        // showError(data.responseJSON.messages[0]);
+      }
+    });
+  }
+
   $(document).ready(() => {
+    messageList.scrollTop(9999);
+    messageList.scroll(debounce(() => {
+      if (messageList.scrollTop() < 10) {
+        fetchMoreMessages();
+      }
+    }, 250));
+
     $("#message-form").submit((event) => {
       event.preventDefault();
-      const messageInput = $("#message-input");
       const text = messageInput.val();
       messageInput.val("");
 
       if (text.length === 0) {
-        messageInput.addClass("is-invalid").on("input", function () {
-          messageInput.off("input");
-          messageInput.removeClass("is-invalid");
-        });
+        showError("Your message must not be empty");
         return;
       }
 
@@ -49,15 +101,25 @@
         },
         dataType: "json",
         success: (data) => {
-          $("#message-list").prepend(`<div class="mt-2 d-flex flex-row-reverse">
+          messageList.append(`<li class="mt-2 d-flex flex-row-reverse">
                     <span class="d-flex bg-primary text-light rounded-3 p-2"
                           style="max-width: 50%">${text}</span>
-                </div>`);
+                </li>`);
+          messageList.animate({scrollTop: messageList.prop("scrollHeight") + 100}, 300);
         },
         error: (data) => {
-          console.error("Error sending stuff", data);
+          showError(data.responseJSON.messages[0]);
         }
-      })
-    })
+      });
+    });
+
+    const socket = io();
+    socket.on("message", (message) => {
+      messageList.append(`<li class="mt-2 d-flex">
+                    <span class="bg-secondary text-light rounded-3 p-2"
+                          style="max-width: 50%">${message}</span>
+                </li>`);
+      messageList.animate({scrollTop: messageList.prop("scrollHeight") + 100}, 300);
+    });
   })
 </script>

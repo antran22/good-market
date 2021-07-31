@@ -1,9 +1,11 @@
 import http from "http";
 import path from "path";
 
-import qs from "qs";
 import express from "express";
 import morgan from "morgan";
+import { Server as SocketIOServer, Socket } from "socket.io";
+
+import qs from "qs";
 import compression from "compression";
 import bodyParser from "body-parser";
 import expressLayouts from "express-ejs-layouts";
@@ -23,6 +25,7 @@ import { validationUtils } from "@/utils/validator";
 import errorHandler from "@/controllers/_error";
 import authenticationUtils from "@/utils/authenticationUtils";
 import * as globalViewVariables from "@/views/global";
+import socketIO from "@/config/socketIO";
 
 connectMongoDB().then();
 
@@ -35,9 +38,13 @@ app.set("query parser", (str: string) => qs.parse(str, { comma: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(buildSessionMiddleware());
-app.use(passport.initialize());
-app.use(passport.session());
+const sessionMiddleware = buildSessionMiddleware();
+const passportInitialization = passport.initialize();
+const passportSession = passport.session();
+
+app.use(sessionMiddleware);
+app.use(passportInitialization);
+app.use(passportSession);
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "/views"));
@@ -74,6 +81,7 @@ const port: number = env.int("SERVER_PORT", 3000);
 const host: string = env("SERVER_HOST", "0.0.0.0");
 
 const httpServer = http.createServer(app);
+socketIO.initializeServer(httpServer);
 
 httpServer
   .listen(port, host, () => {
@@ -85,3 +93,14 @@ httpServer
   .on("close", () => {
     console.log("Closing server");
   });
+
+const wrap = (middleware) => (socket, next) =>
+  middleware(socket.request, {}, next);
+const io = socketIO.getInstance();
+io.use(wrap(sessionMiddleware));
+io.use(wrap(passportInitialization));
+io.use(wrap(passportSession));
+
+io.on("connection", (socket: Socket & { request: Express.Request }) => {
+  socket.join(socket.request.user._id.toString());
+});

@@ -1,18 +1,19 @@
-import {Document, model, Model, PopulatedDoc, Schema} from "mongoose";
-import {IUser} from "@/models/User";
-import {MessageModelName, UserModelName} from "@/models/_const";
-import {body} from "express-validator";
+import { Document, model, Model, PopulatedDoc, Schema } from "mongoose";
+import { IUser } from "@/models/User";
+import { MessageModelName, UserModelName } from "@/models/_const";
+import { body } from "express-validator";
 
 export interface IMessage extends Document {
-  title: string;
-  content: string;
-  author: PopulatedDoc<IUser>;
+  text: string;
+  sender: PopulatedDoc<IUser>;
+  recipient: PopulatedDoc<IUser>;
 }
 
 export interface IMessageModel extends Model<IMessage> {
   findByParticipants(
     userId1: string,
     userId2: string,
+    oldestMessage: number
   ): Promise<IMessage[]>;
 }
 
@@ -35,14 +36,20 @@ const MessageSchema = new Schema<IMessage>(
 
 MessageSchema.statics.findByParticipants = async function (
   userId1: string,
-  userId2: string
+  userId2: string,
+  oldestMessage: number
 ): Promise<IMessage> {
   return this.find({
     $or: [
       { sender: userId1, recipient: userId2 },
       { sender: userId2, recipient: userId1 },
     ],
-  }).sort({ createdAt: "descending" });
+    createdAt: {
+      $lt: oldestMessage,
+    },
+  })
+    .sort({ createdAt: "descending" })
+    .limit(20);
 };
 
 const MessageModel = model<IMessage, IMessageModel>(

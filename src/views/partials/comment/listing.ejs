@@ -5,7 +5,6 @@
         </div>
     </div>
     <div class="col-xl-9 col-lg-8 col-sm-9">
-
         <a href="/user/<%= comment.author._id %>"><%= comment.author.displayName %></a>
         <% if (showRating) { %>
             <div class="mb-0">
@@ -27,7 +26,7 @@
         <div class="col-lg-2">
             <div class="float-end">
                 <%- await include("../../partials/deleteButton", {
-                    _id: post._id,
+                    _id: comment._id,
                     target: "/comment/" + comment._id + "/delete",
                     iconButton: true
                 }) %>
