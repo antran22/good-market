@@ -6,10 +6,10 @@ import { ServerError } from "@/exceptions";
 
 const messageRouter = Router();
 
-messageRouter.get(
-  "/message",
-  async function renderMessageListView(req, res) {}
-);
+messageRouter.get("/message", async function renderMessageListView(req, res) {
+  const contacts = await MessageModel.findContactsOf(req.user._id);
+  return res.renderTemplate("templates/message/list", { contacts });
+});
 
 messageRouter.get(
   "/message/:userId",

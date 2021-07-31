@@ -1,5 +1,5 @@
 import { Document, model, Model, PopulatedDoc, Schema } from "mongoose";
-import { IUser } from "@/models/User";
+import UserModel, { IUser } from "@/models/User";
 import { MessageModelName, UserModelName } from "@/models/_const";
 import { body } from "express-validator";
 
@@ -15,6 +15,8 @@ export interface IMessageModel extends Model<IMessage> {
     userId2: string,
     oldestMessage: number
   ): Promise<IMessage[]>;
+
+  findContactsOf(userId: string): Promise<IUser[]>
 }
 
 const MessageSchema = new Schema<IMessage>(
@@ -37,20 +39,31 @@ const MessageSchema = new Schema<IMessage>(
 MessageSchema.statics.findByParticipants = async function (
   userId1: string,
   userId2: string,
-  oldestMessage: number
-): Promise<IMessage> {
+  before: number
+): Promise<IMessage[]> {
   return this.find({
     $or: [
       { sender: userId1, recipient: userId2 },
       { sender: userId2, recipient: userId1 },
     ],
     createdAt: {
-      $lt: oldestMessage,
+      $lt: before,
     },
   })
     .sort({ createdAt: "descending" })
     .limit(20);
 };
+
+MessageSchema.statics.findContactsOf = async function(userId: string): Promise<IUser[]> {
+  const recipientIds = await this.find({
+    sender: userId,
+  }).distinct("recipient");
+  const senderIds = await this.find({
+    recipient: userId
+  }).distinct("sender");
+
+  return UserModel.where("_id").in([...recipientIds, ...senderIds]);
+}
 
 const MessageModel = model<IMessage, IMessageModel>(
   MessageModelName,

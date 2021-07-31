@@ -5,10 +5,16 @@
         </a>
         <ul class="navbar-nav d-flex flex-row">
             <% if (request.user) { %>
+                <%- await include("./navLink", {
+                    request,
+                    url: "/message/",
+                    content: "<i class='bi bi-chat-right-text'></i>",
+                    activeContent: "<i class='bi bi-chat-right-text-fill'></i>"
+                }) %>
                 <%- await include("./userNavOptions", {request}) %>
             <% } else { %>
-                <%- await include("./navLink", {request, url: "/login", title: "Login"}) %>
-                <%- await include("./navLink", {request, url: "/register", title: "Register"}) %>
+                <%- await include("./navLink", {request, url: "/login", content: "Login", activeContent: null}) %>
+                <%- await include("./navLink", {request, url: "/register", content: "Register", activeContent: null}) %>
             <% } %>
         </ul>
     </div>
