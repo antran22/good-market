@@ -36,7 +36,7 @@ postRouter.post(
   validatePostTitle,
   validatePostDescription,
   validatePostPrice,
-  validatePostTags,
+  // validatePostTags,
 
   async function createPost(req, res) {
     const errors = req.validate();

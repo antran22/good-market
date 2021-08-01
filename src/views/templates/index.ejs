@@ -1,7 +1,68 @@
-<div class="bg-light text-center p-3 mt-3">
-    <h1 id="title">Good Market</h1>
+<div class="container">
+    <i class="btn btn-info" href="/post" onclick="
+    if (document.getElementById('filter').style.display == 'none'){
+        document.getElementById('filter').style.display = 'block';
+    } else {
+        document.getElementById('filter').style.display = 'none'
+    }
+
+">Filter</i>
+    <div id="filter" style="display: none">
+        <label for="from-date">From date</label>
+        <input type="range" id="from-date" min="0" max="3660" value="0" class="slider"><br>
+        <label for="to-date">To date</label>
+        <input type="range" id="to-date" min="0" max="3660" value="3660" class="slider"><br>
+        <span id="date-info">Date range: from&nbsp;
+        <span id="f-date"></span>
+         &nbsp;to&nbsp;
+        <span id="t-date"></span>
+    </span><br>
+        <label for="from-price">From price</label>
+        <input type="range" id="from-price" min="0" max="2000000000" value="0" class="slider"><br>
+        <label for="to-price">To price</label>
+        <input type="range" id="to-price" min="0" max="2000000000" value="2000000000" class="slider"><br>
+        <span id="date-info">Price range: from&nbsp;
+        <span id="f-price"></span>
+         &nbsp;to&nbsp;
+        <span id="t-price"></span>
+    </span><br>
+        <!--    <input type="range" id="price" min="1" max="9999" value="50" class="slider" >-->
+        <script>
+            function getDate(date) {
+                return date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear();
+            }
+
+            let f_date = document.getElementById('from-date');
+            let t_date = document.getElementById('to-date');
+            f_date.oninput = () => {
+                let from_date = new Date()
+                from_date.setDate(from_date.getDate() - (f_date.max - f_date.value));
+                document.getElementById('f-date').innerHTML = getDate(from_date);
+            }
+            t_date.oninput = () => {
+                let to_date = new Date()
+                to_date.setDate(to_date.getDate() - (t_date.max - t_date.value));
+                document.getElementById('t-date').innerHTML = getDate(to_date);
+            }
+            let f_price = document.getElementById('from-price');
+            let t_price = document.getElementById('to-price');
+            const formatter = new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+            })
+            f_price.oninput = () => {
+                document.getElementById('f-price').innerHTML = formatter.format(f_price.value);
+            }
+            t_price.oninput = () => {
+                document.getElementById('t-price').innerHTML = formatter.format(t_price.value);
+            }
+        </script>
+    </div>
 </div>
 
-<div class="container">
-    <a class="btn btn-info" href="/post">View some posts</a>
+<p id='output'></p>
+<div id="search-rs">
+    <% for (const post of posts){ %>
+        <%- await include("../partials/post/listing", {post}); %>
+    <% } %>
 </div>

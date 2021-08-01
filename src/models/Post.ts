@@ -46,6 +46,7 @@ const PostSchema = new Schema<IPost>(
   },
   { timestamps: true }
 );
+PostSchema.index({"description": "text", "title": "text"});
 
 PostSchema.statics.findByIdFullyPopulated = function (id: string) {
   return PostModel.findById(id).populate("seller").populate({
