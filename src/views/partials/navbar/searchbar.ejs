@@ -3,7 +3,7 @@
     <div class="search"> <input type="text" id="searchbar" class="search-input" placeholder="Search..." name="">
 <!--        <a id="search" href="" class="search-icon bi bi-search">-->
             <button type="button" class="search-icon btn btn-primary bi bi-search" id="search">
-                <i class="fas fa-search"></i>
+                <i class="fas"></i>
             </button>
 <!--            <i class="fa fa-search"></i> </a> -->
     </div>
@@ -30,29 +30,14 @@
         query_string = '/?key='+document.getElementById('searchbar').value
         let filter = document.getElementById("filter")
         if (filter){
-            let f_date = document.getElementById('from-date');
-            let t_date = document.getElementById('to-date');
-            let from_date = new Date()
-            from_date.setDate(from_date.getDate() - (f_date.max - f_date.value));
-            query_string +='&fromdate='+from_date.toISOString();
-            let to_date = new Date()
-            to_date.setDate(to_date.getDate() - (t_date.max - t_date.value));
-            query_string +='&todate='+to_date.toISOString();
+            query_string +='&fromdate='+document.getElementById('from-date').value;
+            query_string +='&todate='+document.getElementById('to-date').value;
             let f_price = document.getElementById('from-price');
             let t_price = document.getElementById('to-price');
             query_string +='&fromprice='+f_price.value.toString();
             query_string +='&toprice='+t_price.value.toString();
         }
-        // if(window.location.pathname!='/'){
         window.location = query_string;
-        // } else {
-        //     const res = await getData('/', { search: document.getElementById('searchbar').value })
-        //     for(const post of res.posts){
-        //         document.getElementById('search-rs').innerHTML +=
-        //             JSON.stringify(post)+'\n'
-        //     }
-        //
-        // }
     }
 
 </script>

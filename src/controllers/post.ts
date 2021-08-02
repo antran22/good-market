@@ -3,7 +3,6 @@ import PostModel, {
   IPost,
   validatePostDescription,
   validatePostPrice,
-  validatePostTags,
   validatePostTitle,
 } from "@/models/Post";
 import multerUpload from "@/config/multer";
@@ -36,7 +35,6 @@ postRouter.post(
   validatePostTitle,
   validatePostDescription,
   validatePostPrice,
-  // validatePostTags,
 
   async function createPost(req, res) {
     const errors = req.validate();
@@ -47,7 +45,7 @@ postRouter.post(
           title: req.body.title,
           description: req.body.description,
           price: req.body.price,
-          tags: req.body.tags,
+          tag: "In stock",
         },
       });
     }
@@ -60,7 +58,7 @@ postRouter.post(
       images: req.files.map((file) => padWithSlash(file.path)),
       description: req.body.description,
       price: req.body.price,
-      tags: req.body.tags ?? [],
+      tag: "In stock",
       seller: req.user._id,
     });
 
@@ -91,7 +89,6 @@ postRouter.post(
   validatePostTitle,
   validatePostDescription,
   validatePostPrice,
-  validatePostTags,
   reloadIfValidationFailed,
   async function editPost(req, res, next) {
     const post: IPost = await PostModel.findById(req.params.id);
@@ -103,10 +100,11 @@ postRouter.post(
       throw new ForbiddenError(`You cannot edit other people's post`);
     }
 
+
     post.title = req.body.title;
     post.description = req.body.description;
     post.price = req.body.price;
-    post.tags = req.body.tags;
+    post.tag = req.body.tag;
 
     if (req.files && req.files instanceof Array && req.files.length > 0) {
       post.images = req.files.map((file) => padWithSlash(file.path));
@@ -155,6 +153,9 @@ postRouter.get("/post/:id", async function renderSinglePost(req, res) {
   const post = await PostModel.findByIdFullyPopulated(req.params.id);
   if (!post) {
     throw new NotFoundError(`No post with id ${req.params.id} existing`);
+  }
+  if(!req.isUnauthenticated()){
+
   }
   return res.renderTemplate("templates/post/view", { post });
 });

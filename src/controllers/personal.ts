@@ -3,11 +3,16 @@ import { reloadIfValidationFailed } from "@/utils/validator";
 import multerUpload from "@/config/multer";
 import {notNil, padWithSlash} from "@/utils";
 import { validateDisplayName, validatePhoneNumber } from "@/models/User";
+import {authenticationGuard} from "@/controllers/_utils";
 
 const personalDataRouter = Router();
 
-personalDataRouter.get("/me", function renderPersonalDataView(req, res) {
-  return res.renderTemplate("templates/personalData.ejs");
+
+personalDataRouter.get("/me",
+    authenticationGuard,
+    function renderPersonalDataView(req, res) {
+
+    return res.renderTemplate("templates/personalData.ejs");
 });
 
 personalDataRouter.post(

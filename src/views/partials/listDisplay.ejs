@@ -1,0 +1,36 @@
+<div>
+    <% if(searchrs) {for (const item of searchrs){
+    if(item.seller){%>
+        <%- await include("post/listing", {post:item}); %>
+    <% } else {
+    if(item.displayName){%>
+        <%- await include("user/listing", {user:item}); %>
+    <%}}}} %>
+</div>
+<% if (pages){%>
+<div class="d-flex justify-content-end text-right mt-2">
+    <nav>
+        <ul class="pagination">
+            <%if (pages.prev){%>
+            <li class="page-item"><a class="page-link" href="<%=pages.prev%>" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+            <%}%>
+            <%if(pages.all.length<=12) {
+            for (let i=0;i<pages.all.length; i++){%>
+            <li class="page-item "><a class="page-link" href="<%=pages.all[i]%>"><%=i+1%></a></li>
+            <%}
+            } else {
+            for (let i=0;i<=5; i++){
+            %>
+            <li class="page-item "><a class="page-link" href="<%=pages.all[i]%>"><%=i+1%></a></li>
+            <%};%>
+            <li class="page-item ">...</li>
+            <%    for(let i = pages.all.length-6; i<pages.all.length; i++){%>
+            <li class="page-item "><a class="page-link" href="<%=pages.all[i]%>"><%=i+1%></a></li>
+            <%};}%>
+            <%if (pages.next){%>
+            <li class="page-item"><a class="page-link" href="<%=pages.next%>"  aria-label="Next"><span aria-hidden="true">»</span></a></li>
+            <%}%>
+        </ul>
+    </nav>
+</div>
+<%}%>
