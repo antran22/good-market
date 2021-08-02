@@ -1,4 +1,9 @@
+<link rel="stylesheet" href="/css/list.css">
 <a class="btn btn-info" href="/post/create">Create new post</a>
+<div class="container">
+<div class="row">
 <% for (const post of posts){ %>
     <%- await include("../../partials/post/listing", { post }); %>
 <% } %>
+</div>
+</div>

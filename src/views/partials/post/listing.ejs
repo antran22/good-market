@@ -1,26 +1,27 @@
-<div class="row mt-5 mb-5 bg-light">
-    <div class="col-sm-6 col-md-4">
-        <div class="thumbnail">
-            <img src='<%= post.images[0] %>' alt="<%= post.title %>'s thumbnail image"
-                 class="img-responsive thumbnail-brief">
-            <div class="caption">
-                <h3><a href="/post/<%= post._id %>"><%= post.title %></a></h3>
-                <p class="description"><%= post.description %></p>
-                <div class="clearfix">
-                    <div class="price pull-left">$<%= post.price %></div>
-                    <% if (!request.user) { %>
-                        <a href="/login">Login to view</a>
-                    <% } else { %>
-                        <% if (request.isMe(post.seller)){ %>
-                            <a href="/post/<%= post._id %>/edit" class="btn btn-success pull-right"
-                               role="button">Edit</a>
-                        <% } else { %>
-                            <a class="btn pull-left btn-info" role="button" href="/user/<%= post.seller._id %>">Talk to
-                                seller</a>
-                        <% } %>
-                    <% } %>
+<div class="col-sm-4">
+    
+    <div class="itembox">
+        <% if (!request.user) { %>
+            <a href="/login">Login to view</a>
+        <% } else { %>
+            <% if (request.isMe(post.seller)){ %>
+                <div style="z-index: 2; position: absolute;">
+                <a href="/post/<%= post._id %>/edit" class="btn btn-success pull-right" role="button"><span >Edit</span></a>
                 </div>
-            </div>
+            <% } else { %>
+                <a class="btn pull-left btn-info" role="button" href="/user/<%= post.seller._id %>">Talk to seller</a>
+            <% } %>
+        <% } %>
+        
+
+        <div class="thumbnailbox mb-3">
+            <img src='<%= post.images[0] %>' alt="<%= post.title %>'s thumbnail image" class="thumbnail">
         </div>
+        <h3 class="title"><%= post.title %></h3>
+        <h3 class="price">$<%= post.price %></h3>
+        <p class="description"><%= post.description %></p>
+        
+        
+        <a href="/post/<%= post._id %>"><span class="itemspan"></span></a>
     </div>
 </div>
