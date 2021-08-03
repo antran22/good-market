@@ -7,25 +7,39 @@
         }
     }
 </script>
-<i class="btn btn-info" onclick="turn('filter');">Filter</i><br>
-<div class="container" style="background: white">
-    <div id="filter" style="display: none">
-        <br><i class="btn btn-warning" onclick="turn('date-filter');">Date filter</i><br>
-        <div id="date-filter" style="display: none">
-            <label for="from-date">From date</label>
-            <input type="date" id="from-date">
-            <label for="to-date">To date</label>
-            <input type="date" id="to-date">
-        </div><br>
-        <i class="btn btn-warning" onclick="turn('price-filter');">Price filter</i><br>
-        <div id="price-filter" style="display: none">
-            <label for="from-price">From price</label>
-            <input type="number" id="from-price" min="0" max="2000000000">
-            <label for="to-price">To price</label>
-            <input type="number" id="to-price" min="0" max="2000000000">
-        </div><br>
+
+<div class="accordion" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Filter
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+        <div class="accordion-body">
+            <div id="filter">
+                <div id="date-filter">
+                    <label for="from-date">From date</label>
+                    <input type="date" id="from-date">
+                    <label for="to-date">To date</label>
+                    <input type="date" id="to-date">
+                </div><br>
+                <div id="price-filter">
+                    <label for="from-price">From price</label>
+                    <input type="number" id="from-price" min="0" max="2000000000">
+                    <label for="to-price">To price</label>
+                    <input type="number" id="to-price" min="0" max="2000000000">
+                </div>
+                <button onclick="search()" class="btn btn-primary mt-3">Go</button>
+            </div>
+        </div>
+      </div>
     </div>
 </div>
+
+
+    
+
 
 <%- await include("../partials/listDisplay", {searchrs: searchrs, pages:pages})%>
 

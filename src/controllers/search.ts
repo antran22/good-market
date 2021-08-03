@@ -81,7 +81,7 @@ searchRouter.get("/", async (req, res, next) => {
     }
     console.log(post_pages)
     console.log(pages)
-    return res.renderTemplate("templates/index", {searchrs: post_pages[m], pages: pages});
+    return res.renderTemplate("templates/index", {searchrs: post_pages[m], pages: pages, keyword: req.query.key});
 
 });
 searchRouter.post("/", async (req, res) => {
