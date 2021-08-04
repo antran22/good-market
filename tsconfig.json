@@ -10,7 +10,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],

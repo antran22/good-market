@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/app.ts",
   "engines": {
-    "node": "^16.4.2"
+    "node": "^16.0.1"
   },
   "devDependencies": {
     "@types/connect-flash": "^0.0.37",
@@ -16,7 +16,8 @@
     "nodemon": "^2.0.9",
     "prettier": "^2.3.2",
     "ts-node": "^9.1.1",
-    "tsconfig-paths": "^3.9.0"
+    "tsconfig-paths": "^3.9.0",
+    "tscpaths": "^0.0.9"
   },
   "dependencies": {
     "compression": "^1.7.4",

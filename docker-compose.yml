@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  backend:
+    image: good-market:latest
+    build:
+      context: .
+    volumes:
+      - ./.env:/usr/app/.env
+      - app-uploads:/usr/app/_uploads
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/good-market
+      - REDIS_URL=redis://redis
+
+  mongo:
+    image: mongo:latest
+    volumes:
+      - mongo-data:/data
+  redis:
+    image: redis:latest
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - web
+
+volumes:
+  mongo-data:
+  app-uploads:
+  caddy-data:
+  caddy-config:
