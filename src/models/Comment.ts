@@ -28,8 +28,9 @@ const CommentSchema = new Schema<IComment>(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true}
 );
+CommentSchema.index({"content": "text", "title": "text"});
 
 CommentSchema.statics.findByIdWithAuthor = async function (
   _id: string

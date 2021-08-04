@@ -1,0 +1,48 @@
+<link rel="stylesheet" href="/css/index.css">
+<div class="d-flex justify-content-center px-5">
+    <%if (typeof keyword == 'undefined') { %>
+        <div class="search"> <input type="text" id="searchbar" class="search-input" placeholder="Search..." name="">
+    <% } else {%>
+        <div class="search"> <input type="text" id="searchbar" class="search-input" placeholder="Search..." name="" value=<%= keyword %>>
+    <% } %>
+    
+<!--        <a id="search" href="" class="search-icon bi bi-search">-->
+            <button type="button" class="search-icon btn btn-primary bi bi-search" id="search" onclick="search()">
+                <i class="fas"></i>
+            </button>
+<!--            <i class="fa fa-search"></i> </a> -->
+    </div>
+</div>
+<script>
+    async function getData(url = '', data = {}) {
+        // Default options are marked with *
+        const response = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
+            body: JSON.stringify(data) // body data type must match "Content-Type" header
+        });
+        return response.json(); // parses JSON response into native JavaScript objects
+    }
+
+    async function search() {
+        query_string = '/?key='+document.getElementById('searchbar').value
+        let filter = document.getElementById("filter")
+        if (filter){
+            query_string +='&fromdate='+document.getElementById('from-date').value;
+            query_string +='&todate='+document.getElementById('to-date').value;
+            let f_price = document.getElementById('from-price');
+            let t_price = document.getElementById('to-price');
+            query_string +='&fromprice='+f_price.value.toString();
+            query_string +='&toprice='+t_price.value.toString();
+        }
+        window.location = query_string;
+    }
+
+</script>

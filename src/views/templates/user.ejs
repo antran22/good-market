@@ -22,9 +22,14 @@
                     <a href="/message/<%= user._id %>" class="btn btn-primary">Message</a>
                 <% } %>
             </div>
+            <div id="charts" style="width: 100%">
+                <div id="all-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
+                <div id="year-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
+                <div id="month-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
+            </div>
         </div>
         <div class="col-12 col-lg-9">
-            <div class="mt-3 mb-3 bg-light">
+            <div class="mt-3 mb-3 bg-light conatiner">
                 <h1 class="text-center">Comments</h1>
                 <div class="p-3">
                     <h3>Add more comment</h3>
@@ -45,3 +50,54 @@
         </div>
     </div>
 </div>
+<% if(statistic && (statistic.in_stock+statistic.sold)>0){%>
+<script type="text/javascript">
+    // Load google charts
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    // Draw the chart and set the chart values
+    function drawChart() {
+        var all_data = google.visualization.arrayToDataTable([
+            ['status', 'number of post'],
+            ['In stock', parseInt(<%=statistic.in_stock%>)],
+            ['Sold', parseInt(<%=statistic.sold%>)]
+        ]);
+        var month_data = google.visualization.arrayToDataTable([
+            ['status', 'number of post'],
+            ['In stock', parseInt(<%=statistic.this_month.in_stock%>)],
+            ['Sold', parseInt(<%=statistic.this_month.sold%>)]
+        ]);
+        var year_data = google.visualization.arrayToDataTable([
+            ['status', 'number of post'],
+            ['In stock', parseInt(<%=statistic.this_year.in_stock%>)],
+            ['Sold', parseInt(<%=statistic.this_year.sold%>)]
+        ]);
+
+        // Optional; add a title and set the width and height of the chart
+        var all_options = {'title':'Total', width:250, height:250};
+        var month_options = {'title':'This month', width:250, height:250};
+        var year_options = {'title':'This year', width:250, height:250};
+        // Display the chart inside the <div> element with id="piechart"
+        var all_chart = new google.visualization.PieChart(document.getElementById('all-chart'));
+        all_chart.draw(all_data, all_options);
+        document.getElementById('all-chart').onclick = ()=>{
+            window.location = '<%=statistic.link%>'
+        }
+        var year_chart = new google.visualization.PieChart(document.getElementById('year-chart'));
+        year_chart.draw(year_data, year_options);
+        document.getElementById('year-chart').onclick = ()=>{
+            window.location = '<%=statistic.this_year.link%>'
+        }
+        var month_chart = new google.visualization.PieChart(document.getElementById('month-chart'));
+        month_chart.draw(month_data, month_options);
+        document.getElementById('month-chart').onclick = ()=>{
+            window.location = '<%=statistic.this_month.link%>'
+        }
+    }
+</script>
+<%} else {%>
+    <script>
+        document.getElementById('charts').innerHTML = '<%=user.displayName%> does not have any post !'
+    </script>
+<%}%>

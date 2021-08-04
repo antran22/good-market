@@ -46,7 +46,7 @@ export const UserSchema = new Schema<IUser>(
   },
   { timestamps: true }
 );
-
+UserSchema.index({"username": "text", "displayName": "text", "phoneNumber": "text"});
 UserSchema.plugin(passportLocalMongoose);
 
 UserSchema.methods.createPost = function (post: Partial<IPost>): IPost {
@@ -68,7 +68,7 @@ UserSchema.statics.findByIdWithComments = function (_id: string) {
   });
 };
 
-UserSchema.index("username");
+// UserSchema.index("username");
 
 const UserModel = model<IUser, IUserModel>(UserModelName, UserSchema);
 export default UserModel;

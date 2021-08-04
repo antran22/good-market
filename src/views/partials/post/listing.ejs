@@ -9,8 +9,14 @@
                 <%= post.images.length %>
             </span>
         </div>
+
         <div class="mt-5 mt-sm-0 col-12 col-sm-8 col-md-9 col-lg-10">
             <h3><a class="text-decoration-none" href="/post/<%= post._id %>"><%= post.title %></a></h3>
+            <%if(post.tag!="In stock"){%>
+                <button type="button" class="btn btn-secondary" style="width: 30%">Sold out</button>
+            <%} else {%>
+                <button type="button" class="btn btn-success" style="width: 30%">In stock</button>
+            <%}%>
             <p><%= global.brief(post.description, 100) %></p>
             <h6 class="text-danger"><%= global.currencyFormatter.format(post.price) %></h6>
             <% if (!request.user) { %>
@@ -21,11 +27,45 @@
             <% } %>
         </div>
     </div>
-    <% if (request.isMe(post.seller)) { %>
+    <% if (request.isMe(post.seller) && post.tag=="In stock") { %>
         <div class="position-absolute top-0 end-0 m-2">
             <a href="/post/<%= post._id %>/edit" class="btn btn-primary" role="button">
                 <i class="bi bi-pencil"></i>
             </a>
         </div>
     <% } %>
+
+    <div class="d-flex justify-content-between stats">
+        <div><i class="fa fa-calendar-o"></i><span class="ml-2">
+                <%
+                const create = new Date(post.createdAt);
+                const now = new Date();
+                var unit ;
+                var timediff = Math.abs(now-create);
+                var thres = 1000;
+
+                if (Math.round(timediff/(1000*60*60*24))>0){
+                    timediff = Math.round(timediff/(1000*60*60*24));
+                    unit = 'day'
+                } else {
+                    if (Math.round(timediff/(1000*60*60))>0){
+                        timediff = Math.round(timediff/(1000*60*60));
+                        unit = 'hour'
+                    } else {
+                        if (Math.round(timediff/(1000*60))>0){
+                            timediff = Math.round(timediff/(1000*60));
+                            unit = 'minute'
+                        } else {
+                            timediff = Math.round(timediff/1000);
+                            unit = 'second'
+                        }
+                    }
+                }
+                if(timediff>1){
+                    unit+='s'
+                }
+                %>
+                <%=timediff+' '+unit + ' ago'%>
+                </span></div>
+    </div>
 </div>

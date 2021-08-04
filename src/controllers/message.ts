@@ -3,16 +3,20 @@ import MessageModel, { validateMessageText } from "@/models/Message";
 import UserModel from "@/models/User";
 import socketIO from "@/config/socketIO";
 import { ServerError } from "@/exceptions";
+import {authenticationGuard} from "@/controllers/_utils";
 
 const messageRouter = Router();
 
-messageRouter.get("/message", async function renderMessageListView(req, res) {
+messageRouter.get("/message",
+    authenticationGuard,
+    async function renderMessageListView(req, res) {
   const contacts = await MessageModel.findContactsOf(req.user._id);
   return res.renderTemplate("templates/message/list", { contacts });
 });
 
 messageRouter.get(
   "/message/:userId",
+    authenticationGuard,
   async function renderMessageConversationView(req, res) {
     const messages = await MessageModel.findByParticipants(
       req.user._id,
@@ -29,6 +33,7 @@ messageRouter.get(
 
 messageRouter.get(
   "/message/:userId/fetch",
+    authenticationGuard,
   async function fetchMoreMessage(req, res) {
     try {
       const messages = await MessageModel.findByParticipants(
@@ -56,6 +61,7 @@ messageRouter.get(
 
 messageRouter.post(
   "/message/:userId",
+    authenticationGuard,
   validateMessageText,
   async function createMessage(req, res) {
     const errors = req.validate();
