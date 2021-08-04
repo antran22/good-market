@@ -3,8 +3,9 @@
            value="<%= post?.title ?? "" %>">
     <label class="" for="title">Post title</label>
 </div>
+
 <div class="form-floating mt-3">
-        <textarea class="form-control" id="description" name="description" style="height: 200px;"
+        <textarea class="form-control" id="description" name="description" style="height: 400px;"
                   placeholder="Body"
                   required><%= post?.description ?? "" %></textarea>
     <label class="" for="description">Post description</label>
@@ -16,20 +17,7 @@
            value="<%= post?.price ?? "" %>">
     <label class="" for="price">Post price</label>
 </div>
-<% if (post){%>
-    <div class="form-check">
-        <input class="form-check-input" id="in-stock" name="tag" type="radio" class="form-control input-md" value="In stock" checked>
-        <label class="form-check-label" for="in-stock">
-            In stock
-        </label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input"  id="sold-out" name="tag" type="radio" class="form-control input-md" value="Sold out" >
-        <label class="form-check-label" for="sold-out">
-            Sold out
-        </label>
-    </div>
-<%}%>
+
 <div class="mt-3">
     <label for="images" class="form-label col-sm-4">Post Images (at most 5)</label>
     <div>
@@ -39,4 +27,14 @@
             count: 5
         }); %>
     </div>
+</div>
+
+<div class="mt-3">
+    <% if (post) { %>
+        <label for="sold-checkbox">
+            Mark as sold
+        </label>
+        <input type="checkbox" data-toggle="switchbutton" data-onlabel="Sold" data-offlabel="Not<br/>Sold"
+               data-onstyle="success" data-offstyle="danger" id="sold-checkbox" name="sold" <%= post.sold ? "checked" : "" %>/>
+    <% } %>
 </div>

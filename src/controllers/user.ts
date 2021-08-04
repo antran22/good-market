@@ -8,49 +8,125 @@ import CommentModel, {
 import { notNil } from "@/utils";
 import { NotFoundError } from "@/exceptions";
 import { authenticationGuard } from "@/controllers/_utils";
-import {reloadIfValidationFailed} from "@/utils/validator";
-import Post from "@/models/Post";
-import {Schema} from "mongoose";
+import { reloadIfValidationFailed } from "@/utils/validator";
 import PostModel from "@/models/Post";
+import _ from "lodash";
+import { ObjectId, mongo } from "mongoose";
 
 const userPageRouter = Router();
-async function  statistical_calculation(id){
-    let date = new Date();
-    let first_month = new Date(date.getFullYear(), date.getMonth(), 1);
-    let first_year = new Date(date.getFullYear(), 1, 1);
-    let in_month = {"createdAt":{ $gt:first_month, $lt:date}};
-    let in_year = {"createdAt":{ $gt:first_year, $lt:date}};
-    let is_seller = {"seller":id};
-    let in_stock = {"tag": "In stock"};
-    let sold = {"tag": "Sold out"}
-    let rs = {
-        link: '/?seller='+id,
-        in_stock: (await Post.find(Object.assign({}, is_seller, in_stock))).length,
-        sold: (await Post.find(Object.assign({}, is_seller, sold))).length,
-        this_month:{
-            link: '/?seller='+id+'&fromdate='+ first_month.toISOString()+'&todate='+date.toISOString(),
-            in_stock:(await Post.find(Object.assign({}, is_seller, in_month, in_stock))).length,
-            sold:(await Post.find(Object.assign({}, is_seller, in_month, sold))).length,
-        },
-        this_year:{
-            link: '/?seller='+id+'&fromdate='+ first_year.toISOString()+'&todate='+date.toISOString(),
-            in_stock:(await Post.find(Object.assign({}, is_seller, in_year, in_stock))).length,
-            sold:(await Post.find(Object.assign({}, is_seller, in_year, sold))).length,
-        }
-    }
-    return rs
 
+const combineFilter = (...filters: object[]): object => {
+  return _.reduce(
+    filters,
+    (combinedFilter, filter) => {
+      return { ...combinedFilter, ...filter };
+    },
+    {}
+  );
+};
 
+const buildChartLink = (userId: string, fromDate?: Date): string => {
+  let result = "/post?user=" + userId;
+  if (fromDate) {
+    result += "&from-date=" + fromDate.toISOString();
+    result += "&to-date=" + new Date().toISOString();
+  }
+  return result;
+};
 
+interface StatisticQueryResult {
+  total: number;
+  sold: number;
+  totalThisMonth: number;
+  soldThisMonth: number;
+  totalThisYear: number;
+  soldThisYear: number;
 }
+
+async function userStatistic(userId: string) {
+  const today = new Date();
+  const beginningOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+  const beginningOfYear = new Date(today.getFullYear(), 1, 1);
+
+  const soldFilter = { sold: true };
+  const inThisMonthFilter = {
+    createdAt: { $gt: beginningOfMonth, $lt: today },
+  };
+  const inThisYearFilter = { createdAt: { $gt: beginningOfYear, $lt: today } };
+
+  const queryResults: StatisticQueryResult[] = await PostModel.aggregate([
+    {
+      $match: {
+        seller: new mongo.ObjectId(userId),
+      },
+    },
+    {
+      $facet: {
+        total: [{ $count: "total" }],
+        sold: [{ $match: soldFilter }, { $count: "sold" }],
+        totalThisMonth: [
+          { $match: inThisMonthFilter },
+          { $count: "totalThisMonth" },
+        ],
+        soldThisMonth: [
+          { $match: combineFilter(inThisMonthFilter, soldFilter) },
+          { $count: "soldThisMonth" },
+        ],
+        totalThisYear: [
+          { $match: inThisYearFilter },
+          { $count: "totalThisYear" },
+        ],
+        soldThisYear: [
+          { $match: combineFilter(inThisYearFilter, soldFilter) },
+          { $count: "soldThisYear" },
+        ],
+      },
+    },
+    {
+      $project: {
+        total: { $arrayElemAt: ["$total.total", 0] },
+        sold: { $arrayElemAt: ["$sold.sold", 0] },
+        totalThisMonth: { $arrayElemAt: ["$totalThisMonth.totalThisMonth", 0] },
+        soldThisMonth: { $arrayElemAt: ["$soldThisMonth.soldThisMonth", 0] },
+        totalThisYear: { $arrayElemAt: ["$totalThisYear.totalThisYear", 0] },
+        soldThisYear: { $arrayElemAt: ["$soldThisYear.soldThisYear", 0] },
+      },
+    },
+  ]);
+
+  const queryResult = queryResults[0];
+
+  console.log(queryResult);
+
+  return {
+    link: buildChartLink(userId),
+    sold: queryResult.sold,
+    unsold: queryResult.total - queryResult.sold,
+
+    thisMonth: {
+      link: buildChartLink(userId, beginningOfMonth),
+      unsold: queryResult.totalThisMonth - queryResult.soldThisMonth,
+      sold: queryResult.soldThisMonth,
+    },
+
+    thisYear: {
+      link: buildChartLink(userId, beginningOfYear),
+      unsold: queryResult.totalThisYear - queryResult.soldThisYear,
+      sold: queryResult.soldThisYear,
+    },
+  };
+}
+
 userPageRouter.get(
   "/user/:id",
   async function showPersonalPage(req, res, next) {
     const user = await UserModel.findByIdWithComments(req.params.id);
     if (notNil(user)) {
-        const statistic = await statistical_calculation(req.params.id);
-        console.log(statistic)
-      return res.renderTemplate("templates/user", { user:user, statistic:statistic });
+      const statistic = await userStatistic(user.id);
+      return res.renderTemplate("templates/user", {
+        user: user,
+        statistic: statistic,
+      });
     }
     next(new NotFoundError(`Cannot find user with id ${req.params.id}`));
   }
@@ -79,6 +155,5 @@ userPageRouter.post(
     res.redirect("back");
   }
 );
-
 
 export default userPageRouter;

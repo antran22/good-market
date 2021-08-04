@@ -1,0 +1,67 @@
+<form class="row" action="/post" method="GET" id="search-form">
+    <div class="offset-lg-3 col-lg-6">
+        <div class="mb-2 input-group form-floating">
+            <input type="text" id="keyword" class="form-control border-primary" placeholder="search" name="keyword"
+                   value="<%= request.getQuery("keyword") ?? "" %>"/>
+            <label for="keyword">Search</label>
+            <button type="submit" class="btn btn-outline-primary" id="search">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+
+        <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Filter
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+                     data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div id="filter">
+                            <div id="date-filter">
+                                <label for="from-date">From date</label>
+                                <input name="from-date" type="date" id="from-date"
+                                       value="<%= request.getQuery("from-date") ?? "" %>"/>
+                                <label for="to-date">To date</label>
+                                <input name="to-date" type="date" id="to-date"
+                                       value="<%= request.getQuery("to-date") ?? "" %>"/>
+                            </div>
+                            <br>
+                            <div id="price-filter">
+                                <label for="from-price">From price</label>
+                                <input name="from-price" type="number" id="from-price" min="0" max="2000000000"
+                                       value="<%= request.getQuery("from-price") ?? "" %>"/>
+                                <label for="to-price">To price</label>
+                                <input name="to-price" type="number" id="to-price" min="0" max="2000000000"
+                                       value="<%= request.getQuery("to-price") ?? "" %>"/>
+                            </div>
+                            <div class="text-center">
+                                <a id="clear-form" class="btn btn-danger mt-3">Clear</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+  // Omit empty fields on form submission.
+  $("#search-form").submit(function () {
+    $(this).find(":input").filter(function () {
+      return !this.value;
+    }).attr("disabled", true);
+
+    return true;
+  });
+
+  $("#clear-form").click(function () {
+    $("#filter input").val("");
+  })
+
+
+</script>

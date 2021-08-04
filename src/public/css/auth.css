@@ -1,0 +1,9 @@
+.file-drop-zone-title {
+    color: black;
+}
+
+@media (min-width: 992px) {
+    #auth-form {
+        width: 50%;
+    }
+}

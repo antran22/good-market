@@ -20,13 +20,13 @@
 
     <div class="col-md-9">
         <div class="bg-light p-3 rounded-3 position-relative">
-            <% if (request.isMe(post.seller)&& post.tag=="In stock") { %>
-            <div class="position-absolute end-0 top-0 m-1" style="z-index: 100" >
-                <a class="btn btn-primary" href="/post/<%= post._id %>/edit">
-                    <i class="bi bi-pencil"></i>
-                </a>
-            </div>
-            <%}%>
+            <% if (request.isMe(post.seller)) { %>
+                <div class="position-absolute end-0 top-0 m-1" style="z-index: 100">
+                    <a class="btn btn-primary" href="/post/<%= post._id %>/edit">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                </div>
+            <% } %>
             <div id="imageCarousel" class="rounded-3 carousel slide border border-1 border-dark"
                  data-bs-ride="carousel">
                 <div class="carousel-inner p-3">
@@ -50,40 +50,23 @@
                     <span class="carousel-control-next-icon bg-dark rounded" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
+
+                <% if (post.sold) { %>
+                    <div class="w-100 h-100 position-absolute top-0 d-flex flex-column justify-content-center" style="background: rgba(0, 0, 0, 0.5)">
+                        <div class="text-center">
+                            <span class="bg-success rounded text-white px-5 py-3">SOLD</span>
+                        </div>
+                    </div>
+                <% } %>
             </div>
             <div class="mt-5 rounded-3">
                 <div class="d-flex justify-content-between stats">
-                    <div><i class="fa fa-calendar-o"></i><span class="ml-2">
-                            <%
-                            const create = new Date(post.createdAt);
-                            const now = new Date();
-                            var unit ;
-                            var timediff = Math.abs(now-create);
-                            var thres = 1000;
-
-                            if (Math.round(Math.abs(now-create)/(1000*60*60*24))>0){
-                                timediff = Math.round(Math.abs(now-create)/(1000*60*60*24));
-                                unit = 'day'
-                            } else {
-                                if (Math.round(Math.abs(now-create)/(1000*60*60))>0){
-                                    timediff = Math.round(Math.abs(now-create)/(1000*60*60));
-                                    unit = 'hour'
-                                } else {
-                                    if (Math.round(Math.abs(now-create)/(1000*60))>0){
-                                        timediff = Math.round(Math.abs(now-create)/(1000*60));
-                                        unit = 'minute'
-                                    } else {
-                                        timediff = Math.round(Math.abs(now-create)/1000);
-                                        unit = 'second'
-                                    }
-                                }
-                            }
-                            if(timediff>1){
-                                unit+='s'
-                            }
-                            %>
-                            <%=timediff+' '+unit + ' ago'%>
-                </span></div>
+                    <div>
+                        <i class="bi bi-calendar"></i>
+                        <span class="ml-2">
+                            <%= global.prettyDate(post.createdAt) %>
+                        </span>
+                    </div>
                 </div>
                 <h1><%= post.title %></h1>
                 <br/>

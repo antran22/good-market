@@ -60,37 +60,4 @@ function change_page(a: String, page) {
     return curr
 }
 
-searchRouter.get("/", async (req, res, next) => {
-    // console.log(req.query);
-    const rs = await search(req.query);
-    const posts = rs;
-    const post_pages = await _.chunk(posts, 20);
-    let m = 0;
-    // @ts-ignore
-    if (req.query.page && parseInt(req.query.page) > 0) {
-        // @ts-ignore
-        m = parseInt(req.query.page)
-    }
-    let pages = {};
-    pages["all"] = post_pages.map((e, i) => change_page(req.url, i));
-    if (m > 0) {
-        pages["prev"] = change_page(req.url, m - 1);
-    }
-    if (m < post_pages.length - 1) {
-        pages["next"] = change_page(req.url, m + 1);
-    }
-    console.log(post_pages)
-    console.log(pages)
-    return res.renderTemplate("templates/index", {searchrs: post_pages[m], pages: pages, keyword: req.query.key});
-
-});
-searchRouter.post("/", async (req, res) => {
-    console.log('post search')
-    console.log(req)
-    if (req.body.search) {
-        res.send(await search(req.body.search));
-    }
-
-    // return res.renderTemplate("templates/search");
-});
 export default searchRouter;

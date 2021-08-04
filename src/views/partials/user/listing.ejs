@@ -1,10 +1,15 @@
-
 <div class="mt-5 bg-light p-2 rounded-3 position-relative">
     <div class="row">
         <div class="col-12 col-sm-4 col-md-3 col-lg-2 position-relative">
             <img src='<%= user.avatar %>' alt="<%= user.displayName %>'s avatar"
                  class="img-thumbnail m-0">
         </div>
+        <span>
+            <i class="bi bi-calendar"></i>
+            <span class="ml-2">
+                <%= 'Joined ' + global.prettyDate(user.createdAt) %>
+            </span>
+        </span>
         <div class="mt-5 mt-sm-0 col-12 col-sm-8 col-md-9 col-lg-10">
             <h3><a class="text-decoration-none" href="/user/<%= user._id %>"><%= user.displayName %></a></h3>
             <h5>Score: <%= (await user.calculateScore()).toFixed(2) %></h5>
@@ -14,36 +19,5 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between stats">
-        <div><i class="fa fa-calendar-o"></i><span class="ml-2">
-                <%
-                const create = new Date(user.createdAt);
-                const now = new Date();
-                var unit ;
-                var timediff = Math.abs(now-create);
 
-                if (Math.round(timediff/(1000*60*60*24))>0){
-                    timediff = Math.round(timediff/(1000*60*60*24));
-                    unit = 'day'
-                } else {
-                    if (Math.round(timediff/(1000*60*60))>0){
-                        timediff = Math.round(timediff/(1000*60*60));
-                        unit = 'hour'
-                    } else {
-                        if (Math.round(timediff/(1000*60))>0){
-                            timediff = Math.round(timediff/(1000*60));
-                            unit = 'minute'
-                        } else {
-                            timediff = Math.round(timediff/1000);
-                            unit = 'second'
-                        }
-                    }
-                }
-                if(timediff>1){
-                    unit+='s'
-                }
-                %>
-                <%='Join '+timediff+' '+unit + ' ago'%>
-                </span></div>
-    </div>
 </div>

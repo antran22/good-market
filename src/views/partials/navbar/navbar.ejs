@@ -1,11 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-light mb-5">
-    <%- await include("./searchbar")%>
     <div class="container-fluid">
         <a class="navbar-brand" href="/">
             <span class="me-3">🛍</span> Good Market
         </a>
         <ul class="navbar-nav d-flex flex-row">
             <% if (request.user) { %>
+                <%- await include("./navLink", {request, url: "/post/create", content: "Create post", activeContent: null}) %>
                 <%- await include("./navLink", {
                     request,
                     url: "/message/",
@@ -19,4 +19,5 @@
             <% } %>
         </ul>
     </div>
+
 </nav>

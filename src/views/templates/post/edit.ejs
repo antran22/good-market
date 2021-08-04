@@ -1,19 +1,20 @@
-<form class="container bg-light p-3 mb-5" id="form-create" method="POST" enctype="multipart/form-data">
-    <%- await include("../../partials/post/form_fields", {post}) %>
-
-    <div class="mt-5 mb-3 d-flex justify-content-center">
-        <div class="d-flex m-3">
-            <button id="upload" name="upload" class="btn btn-success" type="submit">Confirm</button>
+<div class="row">
+    <form class="offset-lg-3 col-lg-6 rounded-3 container bg-light p-3 mb-5" id="form-create" method="POST"
+          enctype="multipart/form-data"><%- await include("../../partials/post/form_fields", {post}) %>
+        <div class="mt-5 mb-3 d-flex justify-content-center">
+            <div class="d-flex m-3">
+                <button id="upload" name="upload" class="btn btn-success" type="submit">Confirm</button>
+            </div>
+            <div class="d-flex m-3">
+                <a href="/post" class="btn btn-warning">Cancel</a>
+            </div>
+            <div class="d-flex m-3">
+                <%- await include("../../partials/deleteButton", {
+                    _id: post._id,
+                    target: "/post/" + post._id + "/delete",
+                    iconButton: false
+                }) %>
+            </div>
         </div>
-        <div class="d-flex m-3">
-            <a href="/post" class="btn btn-warning">Cancel</a>
-        </div>
-        <div class="d-flex m-3">
-            <%- await include("../../partials/deleteButton", {
-                _id: post._id,
-                target: "/post/" + post._id + "/delete",
-                iconButton: false
-            }) %>
-        </div>
-    </div>
-</form>
+    </form>
+</div>

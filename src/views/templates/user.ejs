@@ -13,7 +13,13 @@
     <div class="row">
         <div class="col-12 col-lg-3">
             <div class="p-3 mt-3 bg-light">
-                <h3>Info</h3>
+                <h3 class="mb-4">Info</h3>
+                <h5>
+                    <i class="bi bi-calendar"></i>
+                    <span class="ml-2">
+                        <%= 'Joined ' + global.prettyDate(user.createdAt) %>
+                    </span>
+                </h5>
                 <h5>Phone number</h5>
                 <h6><%= user.phoneNumber %></h6>
                 <h5>Rating</h5>
@@ -22,18 +28,20 @@
                     <a href="/message/<%= user._id %>" class="btn btn-primary">Message</a>
                 <% } %>
             </div>
-            <div id="charts" style="width: 100%">
-                <div id="all-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
-                <div id="year-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
-                <div id="month-chart"  class="col-12 col-lg-3" style="background-color: white; width: 100%;"></div>
-            </div>
+
         </div>
         <div class="col-12 col-lg-9">
-            <div class="mt-3 mb-3 bg-light conatiner">
+            <div class="bg-light p-3 mt-3">
+                <div id="charts" class="row">
+                    <div id="all-chart" class="col-4"></div>
+                    <div id="year-chart" class="col-4"></div>
+                    <div id="month-chart" class="col-4"></div>
+                </div>
+            </div>
+            <div class="mt-3 mb-3 bg-light container">
                 <h1 class="text-center">Comments</h1>
                 <div class="p-3">
                     <h3>Add more comment</h3>
-
                     <form action="/user/<%= user._id %>/comment" method="POST">
                         <%- await include("../partials/comment/form_fields", {inputRating: true}) %>
                     </form>
@@ -50,54 +58,51 @@
         </div>
     </div>
 </div>
-<% if(statistic && (statistic.in_stock+statistic.sold)>0){%>
-<script type="text/javascript">
-    // Load google charts
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
 
-    // Draw the chart and set the chart values
-    function drawChart() {
-        var all_data = google.visualization.arrayToDataTable([
-            ['status', 'number of post'],
-            ['In stock', parseInt(<%=statistic.in_stock%>)],
-            ['Sold', parseInt(<%=statistic.sold%>)]
+<% if(statistic){ %>
+    <script type="text/javascript">
+      // Load google charts
+      google.charts.load('current', {'packages': ['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Draw the chart and set the chart values
+      function drawChart() {
+        const all_data = google.visualization.arrayToDataTable([
+          ['status', 'number of post'],
+          ['Sold', <%= statistic.sold %>],
+          ['Not Sold', <%= statistic.unsold %>]
         ]);
-        var month_data = google.visualization.arrayToDataTable([
-            ['status', 'number of post'],
-            ['In stock', parseInt(<%=statistic.this_month.in_stock%>)],
-            ['Sold', parseInt(<%=statistic.this_month.sold%>)]
+        const month_data = google.visualization.arrayToDataTable([
+          ['status', 'number of post'],
+          ['Sold', <%= statistic.thisMonth.sold %>],
+          ['Not Sold', <%= statistic.thisMonth.unsold %>]
         ]);
-        var year_data = google.visualization.arrayToDataTable([
-            ['status', 'number of post'],
-            ['In stock', parseInt(<%=statistic.this_year.in_stock%>)],
-            ['Sold', parseInt(<%=statistic.this_year.sold%>)]
+        const year_data = google.visualization.arrayToDataTable([
+          ['status', 'number of post'],
+          ['Sold', <%= statistic.thisYear.sold %>],
+          ['Not Sold', <%= statistic.thisYear.unsold %>]
         ]);
 
         // Optional; add a title and set the width and height of the chart
-        var all_options = {'title':'Total', width:250, height:250};
-        var month_options = {'title':'This month', width:250, height:250};
-        var year_options = {'title':'This year', width:250, height:250};
+        const all_options = {'title': 'Total'};
+        const month_options = {'title': 'This month'};
+        const year_options = {'title': 'This year'};
         // Display the chart inside the <div> element with id="piechart"
-        var all_chart = new google.visualization.PieChart(document.getElementById('all-chart'));
+        const all_chart = new google.visualization.PieChart(document.getElementById('all-chart'));
         all_chart.draw(all_data, all_options);
-        document.getElementById('all-chart').onclick = ()=>{
-            window.location = '<%=statistic.link%>'
+        document.getElementById('all-chart').onclick = () => {
+          window.location.href = '<%= statistic.link %>'
         }
-        var year_chart = new google.visualization.PieChart(document.getElementById('year-chart'));
+        const year_chart = new google.visualization.PieChart(document.getElementById('year-chart'));
         year_chart.draw(year_data, year_options);
-        document.getElementById('year-chart').onclick = ()=>{
-            window.location = '<%=statistic.this_year.link%>'
+        document.getElementById('year-chart').onclick = () => {
+          window.location.href = '<%= statistic.thisYear.link %>'
         }
-        var month_chart = new google.visualization.PieChart(document.getElementById('month-chart'));
+        const month_chart = new google.visualization.PieChart(document.getElementById('month-chart'));
         month_chart.draw(month_data, month_options);
-        document.getElementById('month-chart').onclick = ()=>{
-            window.location = '<%=statistic.this_month.link%>'
+        document.getElementById('month-chart').onclick = () => {
+          window.location.href = '<%= statistic.thisMonth.link %>'
         }
-    }
-</script>
-<%} else {%>
-    <script>
-        document.getElementById('charts').innerHTML = '<%=user.displayName%> does not have any post !'
+      }
     </script>
-<%}%>
+<% } %>

@@ -1,17 +1,22 @@
 .auth-form {
-    max-width: 800px;
+  max-width: 800px;
 }
 
 #logoIcon {
-    height: 1em;
+  height: 1em;
 }
 
 body {
-    background: rgb(255, 255, 255);
-    background: linear-gradient(302deg, rgba(13, 110, 253, 0.2) 0%, rgba(102, 16, 242, 0.2) 100%);
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 100vh;
-    height: 100%;
-    width: 100%;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(
+    302deg,
+    rgba(13, 110, 253, 0.2) 0%,
+    rgba(102, 16, 242, 0.2) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100vh;
+  height: 100%;
 }
+
+

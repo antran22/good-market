@@ -31,7 +31,6 @@ postRouter.post(
   "/post/create",
   authenticationGuard,
   multerUpload.array("images[]", 5),
-
   validatePostTitle,
   validatePostDescription,
   validatePostPrice,
@@ -45,7 +44,6 @@ postRouter.post(
           title: req.body.title,
           description: req.body.description,
           price: req.body.price,
-          tag: "In stock",
         },
       });
     }
@@ -58,7 +56,6 @@ postRouter.post(
       images: req.files.map((file) => padWithSlash(file.path)),
       description: req.body.description,
       price: req.body.price,
-      tag: "In stock",
       seller: req.user._id,
     });
 
@@ -100,11 +97,11 @@ postRouter.post(
       throw new ForbiddenError(`You cannot edit other people's post`);
     }
 
-
     post.title = req.body.title;
     post.description = req.body.description;
     post.price = req.body.price;
     post.tag = req.body.tag;
+    post.sold = !!req.body.sold;
 
     if (req.files && req.files instanceof Array && req.files.length > 0) {
       post.images = req.files.map((file) => padWithSlash(file.path));
@@ -137,12 +134,43 @@ postRouter.get(
 
 postRouter.get("/post", async function renderPostList(req, res) {
   let user = req.getQuery("user");
+
+  const keyword = req.getQuery("keyword");
+
+  const fromDate = req.getQueryDate("from-date");
+  const toDate = req.getQueryDate("to-date");
+
+  const fromPrice = req.getQueryInt("from-price");
+  const toPrice = req.getQueryInt("to-price");
+
   let query = PostModel.find();
   if (user === "me" && req.isAuthenticated()) {
     user = req.user._id;
   }
+
   if (user) {
     query = query.where("seller", user);
+  }
+
+  if (fromDate) {
+    query = query.where("createdAt").gte(fromDate.getTime());
+  }
+
+  if (toDate) {
+    toDate.setHours(23, 59, 59);
+    query = query.where("createdAt").lte(toDate.getTime());
+  }
+
+  if (fromPrice) {
+    query = query.where("price").gte(fromPrice);
+  }
+
+  if (toPrice) {
+    query = query.where("price").lte(toPrice);
+  }
+
+  if (keyword) {
+    query = query.where("title").regex(`.*${keyword}.*`);
   }
 
   const posts = await query;
@@ -153,9 +181,6 @@ postRouter.get("/post/:id", async function renderSinglePost(req, res) {
   const post = await PostModel.findByIdFullyPopulated(req.params.id);
   if (!post) {
     throw new NotFoundError(`No post with id ${req.params.id} existing`);
-  }
-  if(!req.isUnauthenticated()){
-
   }
   return res.renderTemplate("templates/post/view", { post });
 });

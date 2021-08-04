@@ -58,7 +58,7 @@ UserSchema.methods.calculateScore = async function (): Promise<number> {
     { $match: { _id: { $in: this.comments } } },
     { $group: { _id: null, average: { $avg: "$rating" } } },
   ]);
-  return res[0]?.average ?? 0;
+  return res[0]?.average ?? 5.0;
 };
 
 UserSchema.statics.findByIdWithComments = function (_id: string) {

@@ -7,12 +7,17 @@ import commentRouter from "@/controllers/comment";
 import postRouter from "@/controllers/post";
 import messageRouter from "@/controllers/message";
 import searchRouter from "@/controllers/search";
+import PostModel from "@/models/Post";
 
 const mainRouter = Router();
 
-// mainRouter.get("/", function renderHome(req, res) {
-//   return res.renderTemplate("templates/index");
-// });
+mainRouter.get("/", async function renderHome(req, res) {
+  const newestPosts = await PostModel.find()
+    .sort({ createdAt: "descending" })
+    .limit(10);
+
+  return res.renderTemplate("templates/index", { posts: newestPosts });
+});
 
 mainRouter.use(searchRouter);
 
@@ -29,6 +34,5 @@ mainRouter.use(personalDataRouter);
 mainRouter.use(commentRouter);
 
 mainRouter.use(messageRouter);
-
 
 export default mainRouter;

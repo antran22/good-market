@@ -15,6 +15,7 @@ export interface IPost extends Document {
   title: string;
   description: string;
   price: number;
+  sold: boolean;
   seller: PopulatedDoc<IUser>;
   tag: string;
   comments: PopulatedDoc<IComment>;
@@ -30,6 +31,7 @@ const PostSchema = new Schema<IPost>(
     title: { type: String, require: true },
     description: { type: String, require: true },
     price: { type: Number, require: true, default: 0.0 },
+    sold: { type: Boolean, require: true, defalt: false },
     seller: {
       type: Schema.Types.ObjectId,
       ref: UserModelName,
@@ -46,7 +48,7 @@ const PostSchema = new Schema<IPost>(
   },
   { timestamps: true }
 );
-PostSchema.index({"description": "text", "title": "text"});
+PostSchema.index({ description: "text", title: "text" });
 
 PostSchema.statics.findByIdFullyPopulated = function (id: string) {
   return PostModel.findById(id).populate("seller").populate({
@@ -80,14 +82,14 @@ export const validatePostPrice = body("price")
   .isInt({ min: 0 })
   .withMessage("Price must be a positive number");
 
-// export const validatePostTags = body("tags")
-//   .isArray({ max: 5 })
-//   .withMessage("A post should have at most 5 tags")
-//   .custom((input: string[]) => {
-//     input.forEach((s) => {
-//       if (s.length > 10) {
-//         throw new Error();
-//       }
-//     });
-//   })
-//   .withMessage("Post tags should not be longer than 10 characters");
+export const validatePostTags = body("tags")
+  .isArray({ max: 5 })
+  .withMessage("A post should have at most 5 tags")
+  .custom((input: string[]) => {
+    input.forEach((s) => {
+      if (s.length > 10) {
+        throw new Error();
+      }
+    });
+  })
+  .withMessage("Post tags should not be longer than 10 characters");
