@@ -11,13 +11,20 @@ services:
     environment:
       - MONGODB_URL=mongodb://mongo:27017/good-market
       - REDIS_URL=redis://redis
+    depends_on:
+      - mongo
+      - redis
+    restart: on-failure
 
   mongo:
     image: mongo:latest
     volumes:
       - mongo-data:/data
+    restart: on-failure
+
   redis:
     image: redis:latest
+    restart: on-failure
 
   caddy:
     image: caddy:2-alpine
@@ -29,8 +36,6 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy-data:/data
       - caddy-config:/config
-    networks:
-      - web
 
 volumes:
   mongo-data:
