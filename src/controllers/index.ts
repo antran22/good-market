@@ -8,6 +8,7 @@ import postRouter from "@/controllers/post";
 import messageRouter from "@/controllers/message";
 import searchRouter from "@/controllers/search";
 import PostModel from "@/models/Post";
+import bookmarkHandle from "@/controllers/bookmark";
 
 const mainRouter = Router();
 
@@ -30,6 +31,8 @@ mainRouter.use(postRouter);
 mainRouter.use(authenticationGuard);
 
 mainRouter.use(personalDataRouter);
+
+mainRouter.use(bookmarkHandle);
 
 mainRouter.use(commentRouter);
 

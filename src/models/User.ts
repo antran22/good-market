@@ -7,7 +7,7 @@ import {
 } from "mongoose";
 import passportLocalMongoose from "passport-local-mongoose";
 import PostModel, { IPost } from "@/models/Post";
-import { CommentModelName, UserModelName } from "@/models/_const";
+import {CommentModelName, PostModelName, UserModelName} from "@/models/_const";
 import CommentModel, { IComment } from "@/models/Comment";
 import { body } from "express-validator";
 import { equalToFieldInBody } from "@/utils/validator";
@@ -19,6 +19,7 @@ export interface IUser extends Document {
   avatar?: string;
   phoneNumber: string;
   score: number;
+  bookmark: PopulatedDoc<IPost>[],
   comments: PopulatedDoc<IComment>[];
 
   createPost(post: Partial<IPost>): IPost;
@@ -37,12 +38,19 @@ export const UserSchema = new Schema<IUser>(
     password: String,
     avatar: String,
     phoneNumber: { type: String, required: true },
+    bookmark: [
+          {
+              type: Schema.Types.ObjectId,
+              ref: PostModelName,
+          },
+      ],
     comments: [
       {
         type: Schema.Types.ObjectId,
         ref: CommentModelName,
       },
     ],
+
   },
   { timestamps: true }
 );
