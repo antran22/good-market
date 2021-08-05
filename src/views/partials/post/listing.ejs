@@ -54,35 +54,33 @@
             </a>
         </div>
         <div class="position-absolute bottom-0 end-0">
-
-        <% if (!request.user.bookmark.includes(post._id)){ %>
-        <div id="bookmark<%= post._id %>" class="btn btn-primary" role="button">
-            <i class="bi bi-bookmarks"></i>
+            <% if (!request.user.bookmark.includes(post._id)){ %>
+            <div id="bookmark<%= post._id %>" class="btn btn-primary" role="button" >
+                <i class="bi bi-bookmarks"></i>
+            </div>
+            <% } else { %>
+            <div id="bookmark<%= post._id %>" class="btn btn-warning" role="button" >
+                <i class="bi bi-bookmark-check"></i>
+            </div>
         </div>
-        <% } else { %>
-        <div id="bookmark<%= post._id %>" class="btn btn-warning" role="button">
-            <i class="bi bi-bookmark-check"></i>
-        </div>
 
-
-        </div>
+    <%}%>
         <script>
-            document.getElementById("bookmark<%=post._id%>").onclick = async ()=>{
+            document.getElementById("bookmark<%= post._id %>").onclick =  ()=>{
                 if (document.getElementById("bookmark<%=post._id%>").innerHTML =='<i class="bi bi-bookmarks"></i>')
                 {
-                    await fetch('/bookmark?user=<%=request.user._id%>&post=<%=post._id%>&action=add')
+                    fetch('/bookmark?user=<%=request.user._id%>&post=<%=post._id%>&action=add')
                         .then(response => alert(response.status));
                     document.getElementById("bookmark<%=post._id%>").innerHTML ='<i class="bi bi-bookmark-check"></i>';
                     document.getElementById("bookmark<%=post._id%>").className = "btn btn-warning";
                 } else {
-                    await fetch('/bookmark?user=<%=request.user._id%>&post=<%=post._id%>&action=delete')
+                    fetch('/bookmark?user=<%=request.user._id%>&post=<%=post._id%>&action=delete')
                         .then(response => alert(response.status));
                     document.getElementById("bookmark<%=post._id%>").innerHTML ='<i class="bi bi-bookmarks"></i>';
                     document.getElementById("bookmark<%=post._id%>").className = "btn btn-primary";
                 }
             }
         </script>
-    <%}%>
     <% } %>
 
 </div>
