@@ -170,7 +170,7 @@ postRouter.get("/post", async function renderPostList(req, res) {
   }
 
   if (keyword) {
-    query = query.where("title").regex(`.*${keyword}.*`);
+    query = query.where("title").regex(`.*(?i)${keyword}(?-i).*`);
   }
 
   const posts = await query;
