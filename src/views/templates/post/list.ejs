@@ -1,7 +1,22 @@
 <%- await include("../../partials/search", {keyword: ""}) %>
 
+<% if(caption){%>
+    <div class="alert alert-success" role="alert">
+        <%=caption%>
+    </div>
+<%}%>
+
 <div class="container">
     <% for (const post of posts){ %>
         <%- await include("../../partials/post/listing", {post}); %>
     <% } %>
 </div>
+<% if (pages){%>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        <%for (const [key, value] of Object.entries(pages)) {%>
+        <li class="page-item"><a class="page-link" href="<%=value%>"><%=key%></a></li>
+        <%}%>
+    </ul>
+</nav>
+<%}%>
