@@ -211,7 +211,7 @@ postRouter.get("/post", async function renderPostList(req, res) {
     if (m < post_pages.length - 1) {
         pages["next"] = change_page(req.url, m + 1);
     }
-    const caption = "showing ".concat((m * CHUNK + 1).toString()).concat("-").concat((m * CHUNK + post_pages[m].length).toString()).concat(" / ").concat((posts.length).toString()).concat(" results");
+    const caption = "showing ".concat((m * CHUNK + 1).toString()).concat("-").concat((m * CHUNK + post_pages[m].length).toString()).concat(" / ").concat((posts.length).toString()).concat(" posts");
     console.log(caption)
     return res.renderTemplate("templates/post/list", {
         posts: post_pages[m],
