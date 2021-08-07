@@ -19,5 +19,7 @@ RUN npm ci --production
 COPY --from=builder /usr/app/dist/ dist/
 COPY src/views/ dist/views
 COPY src/public dist/public
+RUN mkdir _uploads
+RUN chown node:node _uploads
 EXPOSE 3000
 ENTRYPOINT [ "/sbin/tini","--", "node", "dist/main.js" ]

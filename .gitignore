@@ -6,7 +6,7 @@
 # Node artifact files
 node_modules/
 .DS_Store/
-env/
+.env
 build/
 dist/
 
