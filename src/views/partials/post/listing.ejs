@@ -48,12 +48,12 @@
         </div>
     </div>
     <% if (request.isMe(post.seller)) { %>
-        <div class="position-absolute top-0 end-0">
+        <div class="top-0 end-0">
             <a href="/post/<%= post._id %>/edit" class="btn btn-primary" role="button">
                 <i class="bi bi-pencil"></i>
             </a>
         </div>
-        <div class="position-absolute bottom-0 end-0">
+        <div class="bottom-0 end-0">
             <% if (!request.user.bookmark.includes(post._id)){ %>
                 <div id="bookmark<%= post._id %>" class="btn btn-primary" role="button">
                     <i class="bi bi-bookmarks"></i>
@@ -67,28 +67,30 @@
         <% } %>
         <script>
             document.getElementById("bookmark<%= post._id %>").onclick = async () => {
-                if (document.getElementById("bookmark<%= post._id %>").innerHTML == '<i class="bi bi-bookmarks"></i>') {
+                if (document.getElementById("bookmark<%= post._id %>").className == 'btn btn-primary') {
                     await fetch('/bookmark?user=<%= request.user._id %>&post=<%= post._id %>&action=add')
                         .then(response => {
                             if (response.status == 200) {
                                 alert('<%= post.title %> has been added to your bookmark!')
+                                document.getElementById("bookmark<%= post._id %>").innerHTML = '<i class="bi bi-bookmark-check"></i>';
+                                document.getElementById("bookmark<%= post._id %>").className = "btn btn-warning";
                             } else {
                                 alert('fail to add <%= post.title %> to your bookmark!')
                             }
                         });
-                    document.getElementById("bookmark<%= post._id %>").innerHTML = '<i class="bi bi-bookmark-check"></i>';
-                    document.getElementById("bookmark<%= post._id %>").className = "btn btn-warning";
+
                 } else {
                     await fetch('/bookmark?user=<%= request.user._id %>&post=<%= post._id %>&action=delete')
                         .then(response => {
                             if (response.status == 200) {
                                 alert('<%= post.title %> has been removed from your bookmark!')
+                                document.getElementById("bookmark<%= post._id %>").innerHTML = '<i class="bi bi-bookmarks"></i>';
+                                document.getElementById("bookmark<%= post._id %>").className = "btn btn-primary";
                             } else {
                                 alert('fail to remove <%= post.title %> from your bookmark!')
                             }
                         });
-                    document.getElementById("bookmark<%= post._id %>").innerHTML = '<i class="bi bi-bookmarks"></i>';
-                    document.getElementById("bookmark<%= post._id %>").className = "btn btn-primary";
+
                 }
             }
         </script>
