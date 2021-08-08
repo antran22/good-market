@@ -1,21 +1,4 @@
 import { Router } from "express";
-import PostModel, {
-    IPost,
-    validatePostDescription,
-    validatePostPrice,
-    validatePostTitle,
-} from "@/models/Post";
-import multerUpload from "@/config/multer";
-import * as fs from "fs";
-import { authenticationGuard } from "@/controllers/_utils";
-import { BadRequestError, ForbiddenError, NotFoundError } from "@/exceptions";
-import { padWithSlash } from "@/utils";
-import CommentModel, {
-    validateCommentContent,
-    validateCommentRating,
-    validateCommentTitle,
-} from "@/models/Comment";
-import { reloadIfValidationFailed } from "@/utils/validator";
 import User from "@/models/User";
 import Post from "@/models/Post";
 
@@ -40,7 +23,7 @@ bookmarkHandle.get('/bookmark',
                 break;
             default:
                 const posts = await Post.find({ _id: { $in: user.bookmark } } );
-                return res.renderTemplate("templates/post/list", { posts });
+                return res.renderTemplate("templates/post/list", { posts , caption:null, pages:null});
         }
 
     } catch (e){
