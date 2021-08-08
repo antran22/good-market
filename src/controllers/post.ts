@@ -201,8 +201,8 @@ postRouter.get("/post", async function renderPostList(req, res) {
         // @ts-ignore
         m = parseInt(req.query.page)
     }
-    if(m<0 || m>=post_pages.length){
-        m=0;
+    if (m < 0 || m >= post_pages.length) {
+        m = 0;
     }
     let pages = {};
     if (m > 0) {
@@ -211,14 +211,18 @@ postRouter.get("/post", async function renderPostList(req, res) {
     if (m < post_pages.length - 1) {
         pages["next"] = change_page(req.url, m + 1);
     }
-    const caption = "showing ".concat((m * CHUNK + 1).toString()).concat("-").concat((m * CHUNK + post_pages[m].length).toString()).concat(" / ").concat((posts.length).toString()).concat(" posts");
+    let caption = null;
+    try{
+        caption = "showing ".concat((m * CHUNK + 1).toString()).concat("-").concat((m * CHUNK + post_pages[m].length).toString()).concat(" / ").concat((posts.length).toString()).concat(" posts");
+    } catch (e) {
+        caption = "not found!";
+    };
     console.log(caption)
     return res.renderTemplate("templates/post/list", {
         posts: post_pages[m],
         pages: pages,
         caption: caption
     });
-    // return res.renderTemplate("templates/post/list", { posts });
 });
 
 postRouter.get("/post/:id", async function renderSinglePost(req, res) {
