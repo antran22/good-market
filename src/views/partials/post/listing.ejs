@@ -48,23 +48,24 @@
         </div>
     </div>
     <% if (request.isMe(post.seller)) { %>
-        <div class="top-0 end-0">
+        <div class="position-absolute top-0 end-0">
             <a href="/post/<%= post._id %>/edit" class="btn btn-primary" role="button">
                 <i class="bi bi-pencil"></i>
             </a>
         </div>
-        <div class="bottom-0 end-0">
-            <% if (!request.user.bookmark.includes(post._id)){ %>
-                <div id="bookmark<%= post._id %>" class="btn btn-primary" role="button">
-                    <i class="bi bi-bookmarks"></i>
-                </div>
-            <% } else { %>
-                <div id="bookmark<%= post._id %>" class="btn btn-warning" role="button">
-                    <i class="bi bi-bookmark-check"></i>
-                </div>
-        </div>
-
         <% } %>
+    <%if(request.user){%>
+    <div class="position-absolute bottom-0 end-0">
+        <% if (!request.user.bookmark.includes(post._id)){ %>
+            <div id="bookmark<%= post._id %>" class="btn btn-primary" role="button">
+                <i class="bi bi-bookmarks"></i>
+            </div>
+        <% } else { %>
+            <div id="bookmark<%= post._id %>" class="btn btn-warning" role="button">
+                <i class="bi bi-bookmark-check"></i>
+            </div>
+            <% } %>
+    </div>
         <script>
             document.getElementById("bookmark<%= post._id %>").onclick = async () => {
                 if (document.getElementById("bookmark<%= post._id %>").className == 'btn btn-primary') {
@@ -94,6 +95,7 @@
                 }
             }
         </script>
-    <% } %>
+    <%}%>
+
 
 </div>

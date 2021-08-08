@@ -6,11 +6,12 @@
     </div>
 <%}%>
 
-<div class="container">
+<div class="mt-5">
     <% for (const post of posts){ %>
         <%- await include("../../partials/post/listing", {post}); %>
     <% } %>
 </div>
+
 <% if (pages){%>
 <nav aria-label="Page navigation example">
     <ul class="pagination">
